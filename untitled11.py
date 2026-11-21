@@ -4,7 +4,6 @@ from PIL import Image
 
 st.set_page_config(
     page_title="Skin Health & Cancer Predictor",
-    page_icon="🔬",
     layout="centered"
 )
 
@@ -79,12 +78,12 @@ st.markdown(
 )
 
 st.title("Skin Health & Cancer Predictor")
-st.write("Apni skin ki picture upload karein aur details enter karke report hasil karein:")
+st.write("Upload skin image and enter patient details to generate the analysis report:")
 st.markdown("---")
 
-st.subheader("📸 Upload Skin Image")
+st.subheader("Upload Skin Image")
 uploaded_file = st.file_uploader(
-    "Clear picture upload karein (JPG, JPEG, PNG)",
+    "Upload clear skin image (JPG, JPEG, PNG)",
     type=["jpg", "jpeg", "png"]
 )
 
@@ -94,7 +93,7 @@ if uploaded_file is not None:
 
 st.markdown("---")
 
-st.subheader("📋 Patient & Lifestyle Details")
+st.subheader("Patient & Lifestyle Details")
 
 patient_name = st.text_input(
     "Patient Name",
@@ -151,29 +150,46 @@ def analyze_skin_abcd(img):
         condition = "Malignant Melanoma / High Cancerous Cell Probability"
         risk = "High Risk (Cancerous Indicators Detected)"
         conf_val = min(96.8, 78.0 + (risk_score * 0.2))
-        advice = "Fauri taur par Oncologist ya Dermatologist se biopsy aur checkup karwayein."
+        advice = "Consult an Oncologist or Dermatologist immediately for biopsy and dermoscopy."
         level = "high"
     elif risk_score >= 34 or red_excess > 28:
         condition = "Basal Cell Carcinoma / Atypical Dysplastic Lesion"
         risk = "Moderate-High Risk (Suspicious Cells)"
         conf_val = min(91.5, 72.0 + (risk_score * 0.25))
-        advice = "Skin cells mein ghair-mamooli tabdeeli hai. Doctor se fori checkup karwayein."
+        advice = "Abnormal skin cell patterns detected. Schedule a clinical skin checkup soon."
         level = "med"
     else:
         condition = "Benign Nevus / Normal Healthy Skin Tissue (Non-Cancerous)"
         risk = "Low Risk (Non-Cancerous)"
         conf_val = max(88.0, 97.5 - (risk_score * 0.2))
-        advice = "Koi cancerous alaamat nazar nahi aayin. Skin ko hydrated rakhein aur sunscreen lagayein."
+        advice = "No cancerous indicators detected. Keep skin hydrated and use sunscreen daily."
         level = "low"
 
     return condition, risk, f"{conf_val:.1f}%", advice, round(float(risk_score), 1), level
 
 if st.button("Generate Full Skin Cancer Report"):
     if uploaded_file is None:
-        st.warning("Pehle upar diye gaye box mein skin ki picture upload karein.")
+        st.warning("Please upload a skin image first.")
     else:
         name_text = patient_name.strip() if patient_name.strip() else "Not Provided"
         condition, risk, confidence, advice, score, level = analyze_skin_abcd(image)
 
         st.markdown("---")
-        st.subheader("🩺
+        st.subheader("Comprehensive Skin Analysis Report")
+        st.write("**Student:** Haseeb Raza | **Program:** BS Computer Science (Section I)")
+        st.write("**Supervisor:** Karar Haider | **University:** Superior University Gold Campus")
+        st.markdown("---")
+        st.write("**Patient Name:**", name_text)
+        st.write("**Patient Profile:**", f"{age} yrs | {gender} | {skin_type} Skin")
+        st.write("**Detected Condition:**", condition)
+        st.write("**ABCD Lesion Risk Index:**", f"{score} / 100")
+        st.write("**AI Model Confidence:**", confidence)
+
+        if level == "high":
+            st.error(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
+        elif level == "med":
+            st.warning(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
+        else:
+            st.success(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
+
+        st.caption("Disclaimer: This AI screening report is for educational purposes only. Please consult a doctor for medical diagnosis.")
