@@ -39,7 +39,6 @@ st.markdown(
         border-radius: 12px;
         padding: 20px;
     }
-    /* White boxes with sharp BLACK text */
     div[data-baseweb="input"],
     div[data-baseweb="input"] > div,
     div[data-baseweb="base-input"],
@@ -60,13 +59,11 @@ st.markdown(
         color: #475569 !important;
         -webkit-text-fill-color: #475569 !important;
     }
-    /* Dropdown menu options */
     ul[role="listbox"],
     ul[role="listbox"] li {
         background-color: #ffffff !important;
         color: #000000 !important;
     }
-    /* Number input + / - buttons */
     button[data-testid="stNumberInputStepDown"],
     button[data-testid="stNumberInputStepUp"] {
         color: #000000 !important;
@@ -186,7 +183,9 @@ def analyze_skin_abcd(img):
         advice = "No cancerous indicators detected. Keep skin hydrated and use sunscreen daily."
         level = "low"
 
-    return condition, risk, f"{conf_val:.1f}%", advice, round(float(risk_score), 1), level
+    conf_str = str(round(float(conf_val), 1)) + "%"
+    score_val = round(float(risk_score), 1)
+    return condition, risk, conf_str, advice, score_val, level
 
 if st.button("Generate Full Skin Cancer Report"):
     if uploaded_file is None:
@@ -195,12 +194,25 @@ if st.button("Generate Full Skin Cancer Report"):
         name_text = patient_name.strip() if patient_name.strip() else "Not Provided"
         condition, risk, confidence, advice, score, level = analyze_skin_abcd(image)
 
+        profile_text = str(age) + " yrs | " + gender + " | " + skin_type + " Skin"
+        score_text = str(score) + " / 100"
+
         st.markdown("---")
         st.subheader("Comprehensive Skin Analysis Report")
         st.write("**Student:** Haseeb Raza | **Program:** BS Computer Science (Section I)")
         st.write("**Supervisor:** Karar Haider | **University:** Superior University Gold Campus")
         st.markdown("---")
         st.write("**Patient Name:**", name_text)
-        st.write("**Patient Profile:**", f"{age} yrs | {gender} | {skin_type} Skin")
+        st.write("**Patient Profile:**", profile_text)
         st.write("**Detected Condition:**", condition)
-        st.write("**ABCD Lesion Risk Index:**", f"{score}
+        st.write("**ABCD Lesion Risk Index:**", score_text)
+        st.write("**AI Model Confidence:**", confidence)
+
+        if level == "high":
+            st.error("**Risk Level:** " + risk + " — **Recommendation:** " + advice)
+        elif level == "med":
+            st.warning("**Risk Level:** " + risk + " — **Recommendation:** " + advice)
+        else:
+            st.success("**Risk Level:** " + risk + " — **Recommendation:** " + advice)
+
+        st.caption("Disclaimer: This AI screening report is for educational purposes only. Please consult a doctor for medical diagnosis.")
