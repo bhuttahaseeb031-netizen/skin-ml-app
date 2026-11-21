@@ -33,11 +33,6 @@ st.markdown(
         border-radius: 12px;
         padding: 15px 20px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    }
-    .student-banner p {
-        margin: 4px 0;
-        font-size: 15px;
     }
     section[data-testid="stFileUploaderDropzone"] {
         background-color: #1e293b !important;
@@ -55,14 +50,6 @@ st.markdown(
     }
     input {
         color: #f8fafc !important;
-    }
-    .report-card {
-        background-color: #1e293b;
-        border-left: 5px solid #38bdf8;
-        padding: 20px;
-        border-radius: 12px;
-        margin-top: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     .stButton > button {
         background: linear-gradient(90deg, #0284c7 0%, #0d9488 100%);
@@ -162,40 +149,48 @@ def analyze_skin_abcd(img):
 
     if risk_score >= 52 or dark_pixel_ratio > 35:
         condition = "Malignant Melanoma / High Cancerous Cell Probability"
-        risk = "High Risk (Cancerous Indicators Detected) 🔴"
+        risk = "High Risk (Cancerous Indicators Detected)"
         conf_val = min(96.8, 78.0 + (risk_score * 0.2))
-        confidence = f"{conf_val:.1f}%"
-        advice = "Fauri taur par Oncologist ya Dermatologist se biopsy aur dermoscopy checkup karwayein. Yeh lesion malignant (cancerous) alaamat rakhta hai."
+        advice = "Fauri taur par Oncologist ya Dermatologist se biopsy aur checkup karwayein."
+        level = "high"
     elif risk_score >= 34 or red_excess > 28:
         condition = "Basal Cell Carcinoma / Atypical Dysplastic Lesion"
-        risk = "Moderate-High Risk (Suspicious Cells) 🟠"
+        risk = "Moderate-High Risk (Suspicious Cells)"
         conf_val = min(91.5, 72.0 + (risk_score * 0.25))
-        confidence = f"{conf_val:.1f}%"
-        advice = "Skin cells mein ghair-mamooli tabdeeli aur asymmetry nazar aa rahi hai. Doctor se fori clinical checkup karwayein."
+        advice = "Skin cells mein ghair-mamooli tabdeeli hai. Doctor se fori checkup karwayein."
+        level = "med"
     else:
         condition = "Benign Nevus / Normal Healthy Skin Tissue (Non-Cancerous)"
-        risk = "Low Risk (Non-Cancerous) 🟢"
+        risk = "Low Risk (Non-Cancerous)"
         conf_val = max(88.0, 97.5 - (risk_score * 0.2))
-        confidence = f"{conf_val:.1f}%"
-        advice = "Koi cancerous alaamat nazar nahi aayin. Apni skin ko hydrated rakhein aur rozana sunscreen istemal karein."
+        advice = "Koi cancerous alaamat nazar nahi aayin. Skin ko hydrated rakhein aur sunscreen lagayein."
+        level = "low"
 
-    return condition, risk, confidence, advice, round(float(risk_score), 1)
+    return condition, risk, f"{conf_val:.1f}%", advice, round(float(risk_score), 1), level
 
 if st.button("Generate Full Skin Cancer Report"):
     if uploaded_file is None:
         st.warning("Pehle upar diye gaye box mein skin ki picture upload karein.")
     else:
-        display_name = patient_name.strip() if patient_name.strip() else "Not Provided"
-        condition, risk, confidence, advice, score = analyze_skin_abcd(image)
+        name_text = patient_name.strip() if patient_name.strip() else "Not Provided"
+        condition, risk, confidence, advice, score, level = analyze_skin_abcd(image)
 
-        report_html = (
-            '<div class="report-card">'
-            '<h3>🩺 Comprehensive Skin Analysis Report</h3>'
-            '<p><strong>Student:</strong> Haseeb Raza | <strong>Program:</strong> BS Computer Science (Section I)</p>'
-            '<p><strong>Supervisor:</strong> Karar Haider | <strong>Institution:</strong> Superior University Gold Campus</p>'
-            '<hr style="border-color: #334155;">'
-            f'<p><strong>Patient Name:</strong> {display_name}</p>'
-            f'<p><strong>Patient Profile:</strong> {age} yrs | {gender} | {skin_type} Skin</p>'
-            f'<p><strong>Detected Condition:</strong> {condition}</p>'
-            f'<p><strong>Skin Cancer Risk Level:</strong> {risk}</p>'
-            f'<p><strong>
+        st.markdown("---")
+        st.subheader("🩺 Comprehensive Skin Analysis Report")
+        st.write("**Student:** Haseeb Raza | **Program:** BS Computer Science (Section I)")
+        st.write("**Supervisor:** Karar Haider | **University:** Superior University Gold Campus")
+        st.markdown("---")
+        st.write("**Patient Name:**", name_text)
+        st.write("**Patient Profile:**", f"{age} yrs | {gender} | {skin_type} Skin")
+        st.write("**Detected Condition:**", condition)
+        st.write("**ABCD Lesion Risk Index:**", f"{score} / 100")
+        st.write("**AI Model Confidence:**", confidence)
+
+        if level == "high":
+            st.error(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
+        elif level == "med":
+            st.warning(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
+        else:
+            st.success(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
+
+        st.caption("Disclaimer: Yeh AI screening report sirf educational aur maloomat ke liye hai, hatmi diagnosis ke liye doctor se ruju karein.")
