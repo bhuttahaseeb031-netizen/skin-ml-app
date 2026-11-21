@@ -27,6 +27,19 @@ st.markdown(
     p, label, .stMarkdown {
         color: #e2e8f0 !important;
     }
+    .student-banner {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-left: 5px solid #38bdf8;
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+    .student-banner p {
+        margin: 4px 0;
+        font-size: 15px;
+    }
     section[data-testid="stFileUploaderDropzone"] {
         background-color: #1e293b !important;
         border: 2px dashed #38bdf8 !important;
@@ -60,6 +73,18 @@ st.markdown(
         margin-top: 15px;
     }
     </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# --- STUDENT & UNIVERSITY INFO AT TOP ---
+st.markdown(
+    """
+    <div class="student-banner">
+        <p><strong>Student Name:</strong> Haseeb Raza</p>
+        <p><strong>Sir Name:</strong> Qarar Haider</p>
+        <p><strong>University:</strong> Superior University Gold Campus</p>
+    </div>
     """,
     unsafe_allow_html=True
 )
@@ -139,8 +164,10 @@ if st.button("Generate Full Skin Cancer Report"):
             f"""
             <div class="report-card">
                 <h3>🩺 Comprehensive Skin Analysis Report</h3>
-                <p><strong>Patient Profile:</strong> {age} yrs | {gender} | {skin_type} Skin</p>
+                <p><strong>Student:</strong> Haseeb Raza | <strong>Supervisor:</strong> Qarar Haider</p>
+                <p><strong>Institution:</strong> Superior University Gold Campus</p>
                 <hr style="border-color: #334155;">
+                <p><strong>Patient Profile:</strong> {age} yrs | {gender} | {skin_type} Skin</p>
                 <p><strong>Detected Condition:</strong> {condition}</p>
                 <p><strong>Skin Cancer Risk Level:</strong> {risk}</p>
                 <p><strong>AI Model Confidence:</strong> {confidence}</p>
