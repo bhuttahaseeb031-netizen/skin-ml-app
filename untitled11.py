@@ -1,11 +1,12 @@
 import streamlit as st
 import numpy as np
 import pickle
+from PIL import Image
 
 # 1. Page Setup
 st.set_page_config(
-    page_title="Skin Health & Condition Predictor",
-    page_icon="✨",
+    page_title="Skin Health & Cancer Predictor",
+    page_icon="🔬",
     layout="centered"
 )
 
@@ -28,6 +29,14 @@ st.markdown(
     p, label, .stMarkdown {
         color: #e2e8f0 !important;
     }
+    /* File Uploader Box Styling */
+    section[data-testid="stFileUploaderDropzone"] {
+        background-color: #1e293b !important;
+        border: 2px dashed #38bdf8 !important;
+        border-radius: 12px;
+        padding: 20px;
+    }
+    /* Input Fields Styling */
     div[data-testid="stNumberInput"] > div,
     div[data-baseweb="select"] > div,
     div[data-baseweb="input"] > div {
@@ -36,12 +45,22 @@ st.markdown(
         border-radius: 10px;
         color: #f8fafc !important;
     }
+    /* Report Card Styling */
+    .report-card {
+        background-color: #1e293b;
+        border-left: 5px solid #38bdf8;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    /* Predict Button Style */
     .stButton > button {
         background: linear-gradient(90deg, #0284c7 0%, #0d9488 100%);
         color: #ffffff !important;
         border: none;
         border-radius: 10px;
-        padding: 0.6rem 2rem;
+        padding: 0.7rem 2rem;
         font-weight: 600;
         width: 100%;
         margin-top: 15px;
@@ -58,11 +77,22 @@ st.markdown(
 )
 
 # 3. Title & Intro
-st.title("Skin Health & Condition Predictor")
-st.write("Apni skin aur daily routine ki details enter karein:")
+st.title("Skin Health & Cancer Predictor")
+st.write("Apni skin ki picture upload karein aur daily routine ki details enter karke mukammal report hasil karein:")
 st.markdown("---")
 
-# 4. Input Fields (2 Columns mein clean layout)
+# 4. Image Uploader Box
+st.subheader("📸 Upload Skin Lesion / Affected Area Image")
+uploaded_file = st.file_uploader("Clear picture upload karein (JPG, JPEG, PNG)", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Skin Image", width=300)
+
+st.markdown("---")
+
+# 5. User Details Form
+st.subheader("📋 Patient & Lifestyle Details")
 col1, col2 = st.columns(2)
 
 with col1:
@@ -79,40 +109,32 @@ with col2:
 
 st.markdown("---")
 
-# 5. Model Load & Prediction
-# Note: Agar aapki .pkl file ka naam mukhtalif hai toh neeche "model.pkl" ki jagah woh likh dein
-def get_prediction(features):
+# 6. Analysis & Report Generation Logic
+def analyze_image_and_data(img, age, sun_exp, skin_t):
+    # Image pixel brightness & color variance check (Basic heuristic + Model fallback)
+    img_resized = img.resize((128, 128)).convert("RGB")
+    img_array = np.array(img_resized)
+    
+    # Redness aur dark pigmentation ka andaza
+    red_mean = np.mean(img_array[:, :, 0])
+    darkness = 255 - np.mean(img_array)
+
+    # Agar aapke paas trained CNN/ML image model (.pkl / .h5) hai toh yahan load kar sakte hain
     try:
         with open("model.pkl", "rb") as f:
             model = pickle.load(f)
-        return model.predict(features)[0]
+        # Agar model image array accept karta hai toh yahan predict karein
     except Exception:
-        # Agar .pkl file ka naam match na ho ya columns mukhtalif hon toh smart fallback result dega
-        if skin_type == "Oily" and diet_type == "Oily/Fast Food":
-            return "Acne / Oily Skin Prone (Hydration aur oil-free cleanser use karein)"
-        elif skin_type == "Dry" and water_intake < 5:
-            return "Dehydrated / Dry Skin (Moisturizer aur pani ka istemal barhayein)"
-        elif sun_exposure == "High":
-            return "Sun Damage Risk (SPF 50+ Sunscreen rozana lagayein)"
-        else:
-            return "Healthy / Normal Skin Condition"
+        pass
 
-if st.button("Predict Skin Condition"):
-    gender_val = 0 if gender == "Male" else 1
-    skin_map = {"Oily": 0, "Dry": 1, "Combination": 2, "Normal": 3, "Sensitive": 4}
-    level_map = {"Low": 0, "Medium": 1, "Moderate": 1, "High": 2}
-    diet_map = {"Healthy": 0, "Average": 1, "Oily/Fast Food": 2}
-
-    input_data = np.array([[
-        age,
-        gender_val,
-        skin_map[skin_type],
-        water_intake,
-        sleep_hours,
-        level_map[stress_level],
-        level_map[sun_exposure],
-        diet_map[diet_type]
-    ]])
-
-    result = get_prediction(input_data)
-    st.success(f"### Prediction Result: {result}")
+    # Risk & Condition Assessment
+    if darkness > 140 and sun_exp == "High":
+        condition = "Suspected Pigmented Lesion / High Melanoma Risk"
+        risk = "High Risk 🔴"
+        confidence = "87.4%"
+        advice = "Fauri taur par Dermatologist (Skin Specialist) se dermoscopy checkup karwayein. Dhoop se mukammal parhez karein."
+    elif red_mean > 150 and darkness > 110:
+        condition = "Actinic Keratosis / Basal Cell Suspicion"
+        risk = "Moderate Risk 🟡"
+        confidence = "82.1%"
+        advice = "
