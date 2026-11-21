@@ -26,7 +26,7 @@ st.markdown(
     p, label, .stMarkdown {
         color: #e2e8f0 !important;
     }
-    .info-banner {
+    .student-banner {
         background-color: #1e293b;
         border: 1px solid #334155;
         border-left: 5px solid #38bdf8;
@@ -35,7 +35,7 @@ st.markdown(
         margin-bottom: 20px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
-    .info-banner p {
+    .student-banner p {
         margin: 4px 0;
         font-size: 15px;
     }
@@ -76,12 +76,14 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- NAME & INSTRUCTOR INFO ---
+# --- STUDENT & UNIVERSITY INFO ---
 st.markdown(
     """
-    <div class="info-banner">
-        <p><strong>Name:</strong> Haseeb Raza</p>
-        <p><strong>Instructor:</strong> Karar Haider</p>
+    <div class="student-banner">
+        <p><strong>Student Name:</strong> Haseeb Raza</p>
+        <p><strong>Program & Section:</strong> BS Computer Science (Section I)</p>
+        <p><strong>Sir Name:</strong> Karar Haider</p>
+        <p><strong>University:</strong> Superior University Gold Campus</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -102,8 +104,8 @@ if uploaded_file is not None:
     st.image(image, caption="Uploaded Skin Image", width=300)
 
 st.markdown("---")
-st.subheader("📋 Patient & Lifestyle Details")
 
+st.subheader("📋 Patient & Lifestyle Details")
 col1, col2 = st.columns(2)
 
 with col1:
@@ -118,19 +120,20 @@ with col1:
 with col2:
     sleep_hours = st.slider("Sleep Hours (Rozana Neend)", 3, 12, 7)
     stress_level = st.selectbox("Stress Level", ["Low", "Medium", "High"])
-    sun_exposure = st.selectbox("Sun Exposure", ["Low", "Moderate", "High"])
-    diet_type = st.selectbox("Diet Quality", ["Healthy", "Average", "Oily/Fast Food"])
+    diet_type = st.selectbox(
+        "Diet Quality",
+        ["Healthy", "Average", "Oily/Fast Food"]
+    )
 
 st.markdown("---")
 
-
-def analyze_skin(img, sun_exp):
+def analyze_skin(img):
     img_resized = img.resize((128, 128)).convert("RGB")
     img_array = np.array(img_resized)
     red_mean = np.mean(img_array[:, :, 0])
     darkness = 255 - np.mean(img_array)
 
-    if darkness > 140 and sun_exp == "High":
+    if darkness > 140:
         condition = "Suspected Pigmented Lesion / High Melanoma Risk"
         risk = "High Risk 🔴"
         confidence = "87.4%"
@@ -148,22 +151,22 @@ def analyze_skin(img, sun_exp):
 
     return condition, risk, confidence, advice
 
-
 if st.button("Generate Full Skin Cancer Report"):
     if uploaded_file is None:
         st.warning("Pehle upar diye gaye box mein skin ki picture upload karein.")
     else:
-        condition, risk, confidence, advice = analyze_skin(image, sun_exposure)
+        condition, risk, confidence, advice = analyze_skin(image)
+        
         report_html = (
             '<div class="report-card">'
             '<h3>🩺 Comprehensive Skin Analysis Report</h3>'
-            '<p><strong>Name:</strong> Haseeb Raza | <strong>Instructor:</strong> Karar Haider</p>'
+            '<p><strong>Student:</strong> Haseeb Raza | <strong>Program:</strong> BS Computer Science (Section I)</p>'
+            '<p><strong>Supervisor:</strong> Karar Haider | <strong>Institution:</strong> Superior University Gold Campus</p>'
             '<hr style="border-color: #334155;">'
             f'<p><strong>Patient Profile:</strong> {age} yrs | {gender} | {skin_type} Skin</p>'
             f'<p><strong>Detected Condition:</strong> {condition}</p>'
             f'<p><strong>Skin Cancer Risk Level:</strong> {risk}</p>'
             f'<p><strong>AI Model Confidence:</strong> {confidence}</p>'
-            f'<p><strong>Sun Exposure Factor:</strong> {sun_exposure}</p>'
             '<hr style="border-color: #334155;">'
             f'<p><strong>Medical Recommendation:</strong><br>{advice}</p>'
             '<p style="font-size: 12px; color: #94a3b8 !important; margin-top: 10px;">'
