@@ -82,7 +82,7 @@ st.markdown(
     """
     <div class="student-banner">
         <p><strong>Student Name:</strong> Haseeb Raza</p>
-        <p><strong>Sir Name:</strong> Qarar Haider</p>
+        <p><strong>Sir Name:</strong> Karar Haider</p>
         <p><strong>University:</strong> Superior University Gold Campus</p>
     </div>
     """,
@@ -164,7 +164,7 @@ if st.button("Generate Full Skin Cancer Report"):
             f"""
             <div class="report-card">
                 <h3>🩺 Comprehensive Skin Analysis Report</h3>
-                <p><strong>Student:</strong> Haseeb Raza | <strong>Supervisor:</strong> Qarar Haider</p>
+                <p><strong>Student:</strong> Haseeb Raza | <strong>Supervisor:</strong> Karar Haider</p>
                 <p><strong>Institution:</strong> Superior University Gold Campus</p>
                 <hr style="border-color: #334155;">
                 <p><strong>Patient Profile:</strong> {age} yrs | {gender} | {skin_type} Skin</p>
@@ -174,10 +174,4 @@ if st.button("Generate Full Skin Cancer Report"):
                 <p><strong>Sun Exposure Factor:</strong> {sun_exposure}</p>
                 <hr style="border-color: #334155;">
                 <p><strong>Medical Recommendation:</strong><br>{advice}</p>
-                <p style="font-size: 12px; color: #94a3b8 !important; margin-top: 10px;">
-                *Disclaimer: Yeh AI screening report sirf maloomat ke liye hai, doctor se ruju zaroor karein.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+                <p style="font-size:
