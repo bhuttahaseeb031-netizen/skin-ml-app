@@ -48,7 +48,7 @@ st.markdown(
         border-radius: 10px;
         color: #f8fafc !important;
     }
-    input {
+    input, div[data-baseweb="select"] span {
         color: #f8fafc !important;
     }
     .stButton > button {
@@ -97,14 +97,14 @@ st.markdown("---")
 st.subheader("📋 Patient & Lifestyle Details")
 
 patient_name = st.text_input(
-    "Patient Name (Mareez ka Naam)",
+    "Patient Name",
     placeholder="Enter patient full name..."
 )
 
 col1, col2 = st.columns(2)
 
 with col1:
-    age = st.number_input("Age (Umar)", min_value=10, max_value=100, value=24)
+    age = st.number_input("Age", min_value=10, max_value=100, value=24)
     gender = st.selectbox("Gender", ["Male", "Female"])
     skin_type = st.selectbox(
         "Skin Type",
@@ -113,7 +113,7 @@ with col1:
     water_intake = st.slider("Daily Water Intake (Glasses)", 1, 15, 6)
 
 with col2:
-    sleep_hours = st.slider("Sleep Hours (Rozana Neend)", 3, 12, 7)
+    sleep_hours = st.slider("Sleep Hours", 3, 12, 7)
     stress_level = st.selectbox("Stress Level", ["Low", "Medium", "High"])
     diet_type = st.selectbox(
         "Diet Quality",
@@ -176,21 +176,4 @@ if st.button("Generate Full Skin Cancer Report"):
         condition, risk, confidence, advice, score, level = analyze_skin_abcd(image)
 
         st.markdown("---")
-        st.subheader("🩺 Comprehensive Skin Analysis Report")
-        st.write("**Student:** Haseeb Raza | **Program:** BS Computer Science (Section I)")
-        st.write("**Supervisor:** Karar Haider | **University:** Superior University Gold Campus")
-        st.markdown("---")
-        st.write("**Patient Name:**", name_text)
-        st.write("**Patient Profile:**", f"{age} yrs | {gender} | {skin_type} Skin")
-        st.write("**Detected Condition:**", condition)
-        st.write("**ABCD Lesion Risk Index:**", f"{score} / 100")
-        st.write("**AI Model Confidence:**", confidence)
-
-        if level == "high":
-            st.error(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
-        elif level == "med":
-            st.warning(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
-        else:
-            st.success(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
-
-        st.caption("Disclaimer: Yeh AI screening report sirf educational aur maloomat ke liye hai, hatmi diagnosis ke liye doctor se ruju karein.")
+        st.subheader("🩺
