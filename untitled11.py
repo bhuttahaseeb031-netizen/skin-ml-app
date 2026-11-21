@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import pickle
 from PIL import Image
 
 st.set_page_config(
@@ -77,11 +76,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- STUDENT & UNIVERSITY INFO AT TOP ---
+# --- STUDENT & UNIVERSITY INFO ---
 st.markdown(
     """
     <div class="student-banner">
         <p><strong>Student Name:</strong> Haseeb Raza</p>
+        <p><strong>Program & Section:</strong> BS Computer Science (Section I)</p>
         <p><strong>Sir Name:</strong> Karar Haider</p>
         <p><strong>University:</strong> Superior University Gold Campus</p>
     </div>
@@ -138,20 +138,17 @@ def analyze_skin(img, sun_exp):
         condition = "Suspected Pigmented Lesion / High Melanoma Risk"
         risk = "High Risk 🔴"
         confidence = "87.4%"
-        advice = """Fauri taur par Dermatologist se checkup karwayein.
-        Dhoop se mukammal parhez karein."""
+        advice = "Fauri taur par Dermatologist se checkup karwayein. Dhoop se mukammal parhez karein."
     elif red_mean > 150 and darkness > 110:
         condition = "Actinic Keratosis / Basal Cell Suspicion"
         risk = "Moderate Risk 🟡"
         confidence = "82.1%"
-        advice = """Skin par surkhi aur daagh ki jaanch ke liye doctor se milein.
-        SPF 50+ sunscreen rozana lagayein."""
+        advice = "Skin par surkhi aur daagh ki jaanch ke liye doctor se milein. SPF 50+ sunscreen rozana lagayein."
     else:
         condition = "Benign Nevus / Normal Skin Tissue (Non-Cancerous)"
         risk = "Low Risk 🟢"
         confidence = "94.6%"
-        advice = """Koi khatarnak alaamat nazar nahi aayin.
-        Skin ko hydrated rakhein aur sunscreen istemal karein."""
+        advice = "Koi khatarnak alaamat nazar nahi aayin. Skin ko hydrated rakhein aur sunscreen istemal karein."
 
     return condition, risk, confidence, advice
 
@@ -160,18 +157,23 @@ if st.button("Generate Full Skin Cancer Report"):
         st.warning("Pehle upar diye gaye box mein skin ki picture upload karein.")
     else:
         condition, risk, confidence, advice = analyze_skin(image, sun_exposure)
-        st.markdown(
-            f"""
-            <div class="report-card">
-                <h3>🩺 Comprehensive Skin Analysis Report</h3>
-                <p><strong>Student:</strong> Haseeb Raza | <strong>Supervisor:</strong> Karar Haider</p>
-                <p><strong>Institution:</strong> Superior University Gold Campus</p>
-                <hr style="border-color: #334155;">
-                <p><strong>Patient Profile:</strong> {age} yrs | {gender} | {skin_type} Skin</p>
-                <p><strong>Detected Condition:</strong> {condition}</p>
-                <p><strong>Skin Cancer Risk Level:</strong> {risk}</p>
-                <p><strong>AI Model Confidence:</strong> {confidence}</p>
-                <p><strong>Sun Exposure Factor:</strong> {sun_exposure}</p>
-                <hr style="border-color: #334155;">
-                <p><strong>Medical Recommendation:</strong><br>{advice}</p>
-                <p style="font-size:
+        
+        report_html = (
+            '<div class="report-card">'
+            '<h3>🩺 Comprehensive Skin Analysis Report</h3>'
+            '<p><strong>Student:</strong> Haseeb Raza | <strong>Program:</strong> BS Computer Science (Section I)</p>'
+            '<p><strong>Supervisor:</strong> Karar Haider | <strong>Institution:</strong> Superior University Gold Campus</p>'
+            '<hr style="border-color: #334155;">'
+            f'<p><strong>Patient Profile:</strong> {age} yrs | {gender} | {skin_type} Skin</p>'
+            f'<p><strong>Detected Condition:</strong> {condition}</p>'
+            f'<p><strong>Skin Cancer Risk Level:</strong> {risk}</p>'
+            f'<p><strong>AI Model Confidence:</strong> {confidence}</p>'
+            f'<p><strong>Sun Exposure Factor:</strong> {sun_exposure}</p>'
+            '<hr style="border-color: #334155;">'
+            f'<p><strong>Medical Recommendation:</strong><br>{advice}</p>'
+            '<p style="font-size: 12px; color: #94a3b8 !important; margin-top: 10px;">'
+            '*Disclaimer: Yeh AI screening report sirf maloomat ke liye hai, doctor se ruju zaroor karein.'
+            '</p>'
+            '</div>'
+        )
+        st.markdown(report_html, unsafe_allow_html=True)
