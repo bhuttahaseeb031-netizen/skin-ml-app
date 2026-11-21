@@ -25,14 +25,6 @@ st.markdown(
     p, label, .stMarkdown {
         color: #e2e8f0 !important;
     }
-    .student-banner {
-        background-color: #1e293b;
-        border: 1px solid #334155;
-        border-left: 5px solid #38bdf8;
-        border-radius: 12px;
-        padding: 15px 20px;
-        margin-bottom: 20px;
-    }
     section[data-testid="stFileUploaderDropzone"] {
         background-color: #1e293b !important;
         border: 2px dashed #38bdf8 !important;
@@ -68,6 +60,11 @@ st.markdown(
     button[data-testid="stNumberInputStepUp"] {
         color: #000000 !important;
     }
+    /* Alert boxes (Risk Level) clear dark text */
+    div[data-testid="stAlert"] p {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+    }
     .stButton > button {
         background: linear-gradient(90deg, #0284c7 0%, #0d9488 100%);
         color: #ffffff !important;
@@ -79,18 +76,6 @@ st.markdown(
         margin-top: 15px;
     }
     </style>
-    """,
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    """
-    <div class="student-banner">
-        <p><strong>Student Name:</strong> Haseeb Raza</p>
-        <p><strong>Program & Section:</strong> BS Computer Science (Section I)</p>
-        <p><strong>Sir Name:</strong> Karar Haider</p>
-        <p><strong>University:</strong> Superior University Gold Campus</p>
-    </div>
     """,
     unsafe_allow_html=True
 )
@@ -157,23 +142,24 @@ def analyze_skin_abcd(img):
     green_blue_avg = (center[:, :, 1] + center[:, :, 2]) / 2.0
     red_excess = np.mean(red_channel - green_blue_avg)
 
-    risk_score = (
+    raw_score = (
         (asymmetry_score * 0.8)
         + (color_std * 0.7)
         + (dark_pixel_ratio * 0.6)
         + (max(0.0, float(red_excess)) * 0.9)
     )
+    risk_score = min(98.5, raw_score)
 
     if risk_score >= 52 or dark_pixel_ratio > 35:
         condition = "Malignant Melanoma / High Cancerous Cell Probability"
         risk = "High Risk (Cancerous Indicators Detected)"
-        conf_val = min(96.8, 78.0 + (risk_score * 0.2))
+        conf_val = min(96.8, 78.0 + (risk_score * 0.18))
         advice = "Consult an Oncologist or Dermatologist immediately for biopsy and dermoscopy."
         level = "high"
     elif risk_score >= 34 or red_excess > 28:
         condition = "Basal Cell Carcinoma / Atypical Dysplastic Lesion"
         risk = "Moderate-High Risk (Suspicious Cells)"
-        conf_val = min(91.5, 72.0 + (risk_score * 0.25))
+        conf_val = min(91.5, 72.0 + (risk_score * 0.22))
         advice = "Abnormal skin cell patterns detected. Schedule a clinical skin checkup soon."
         level = "med"
     else:
@@ -199,9 +185,6 @@ if st.button("Generate Full Skin Cancer Report"):
 
         st.markdown("---")
         st.subheader("Comprehensive Skin Analysis Report")
-        st.write("**Student:** Haseeb Raza | **Program:** BS Computer Science (Section I)")
-        st.write("**Supervisor:** Karar Haider | **University:** Superior University Gold Campus")
-        st.markdown("---")
         st.write("**Patient Name:**", name_text)
         st.write("**Patient Profile:**", profile_text)
         st.write("**Detected Condition:**", condition)
