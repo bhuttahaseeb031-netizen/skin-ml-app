@@ -39,16 +39,35 @@ st.markdown(
         border-radius: 12px;
         padding: 20px;
     }
-    div[data-testid="stNumberInput"] > div,
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="input"] > div {
+    /* Fix for all input & dropdown boxes so text is clearly visible */
+    div[data-baseweb="input"],
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="base-input"],
+    div[data-baseweb="select"] > div {
         background-color: #1e293b !important;
-        border: 1px solid #334155 !important;
-        border-radius: 10px;
+        border-color: #38bdf8 !important;
         color: #f8fafc !important;
+        border-radius: 10px !important;
     }
-    input, div[data-baseweb="select"] span {
-        color: #f8fafc !important;
+    input[type="text"],
+    input[type="number"],
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] div {
+        background-color: transparent !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+    input::placeholder {
+        color: #94a3b8 !important;
+        -webkit-text-fill-color: #94a3b8 !important;
+    }
+    /* Dropdown menu list items */
+    ul[role="listbox"] {
+        background-color: #1e293b !important;
+        color: #ffffff !important;
+    }
+    ul[role="listbox"] li {
+        color: #ffffff !important;
     }
     .stButton > button {
         background: linear-gradient(90deg, #0284c7 0%, #0d9488 100%);
