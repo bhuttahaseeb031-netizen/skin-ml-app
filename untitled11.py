@@ -39,35 +39,37 @@ st.markdown(
         border-radius: 12px;
         padding: 20px;
     }
-    /* Fix for all input & dropdown boxes so text is clearly visible */
+    /* White boxes with sharp BLACK text */
     div[data-baseweb="input"],
     div[data-baseweb="input"] > div,
     div[data-baseweb="base-input"],
     div[data-baseweb="select"] > div {
-        background-color: #1e293b !important;
-        border-color: #38bdf8 !important;
-        color: #f8fafc !important;
+        background-color: #ffffff !important;
+        border: 2px solid #38bdf8 !important;
         border-radius: 10px !important;
     }
     input[type="text"],
     input[type="number"],
     div[data-baseweb="select"] span,
     div[data-baseweb="select"] div {
-        background-color: transparent !important;
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+        font-weight: 600 !important;
     }
     input::placeholder {
-        color: #94a3b8 !important;
-        -webkit-text-fill-color: #94a3b8 !important;
+        color: #475569 !important;
+        -webkit-text-fill-color: #475569 !important;
     }
-    /* Dropdown menu list items */
-    ul[role="listbox"] {
-        background-color: #1e293b !important;
-        color: #ffffff !important;
-    }
+    /* Dropdown menu options */
+    ul[role="listbox"],
     ul[role="listbox"] li {
-        color: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
+    /* Number input + / - buttons */
+    button[data-testid="stNumberInputStepDown"],
+    button[data-testid="stNumberInputStepUp"] {
+        color: #000000 !important;
     }
     .stButton > button {
         background: linear-gradient(90deg, #0284c7 0%, #0d9488 100%);
@@ -201,14 +203,4 @@ if st.button("Generate Full Skin Cancer Report"):
         st.write("**Patient Name:**", name_text)
         st.write("**Patient Profile:**", f"{age} yrs | {gender} | {skin_type} Skin")
         st.write("**Detected Condition:**", condition)
-        st.write("**ABCD Lesion Risk Index:**", f"{score} / 100")
-        st.write("**AI Model Confidence:**", confidence)
-
-        if level == "high":
-            st.error(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
-        elif level == "med":
-            st.warning(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
-        else:
-            st.success(f"**Risk Level:** {risk}\n\n**Recommendation:** {advice}")
-
-        st.caption("Disclaimer: This AI screening report is for educational purposes only. Please consult a doctor for medical diagnosis.")
+        st.write("**ABCD Lesion Risk Index:**", f"{score}
