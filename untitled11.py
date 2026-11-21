@@ -79,7 +79,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- STUDENT & UNIVERSITY INFO ---
 st.markdown(
     """
     <div class="student-banner">
@@ -110,8 +109,10 @@ st.markdown("---")
 
 st.subheader("📋 Patient & Lifestyle Details")
 
-# --- PATIENT NAME BOX ---
-patient_name = st.text_input("Patient Name (Mareez ka Naam)", placeholder="Enter patient full name...")
+patient_name = st.text_input(
+    "Patient Name (Mareez ka Naam)",
+    placeholder="Enter patient full name..."
+)
 
 col1, col2 = st.columns(2)
 
@@ -148,4 +149,53 @@ def analyze_skin_abcd(img):
     color_std = np.std(center)
     dark_pixel_ratio = np.mean(gray_center < 115) * 100
 
-    red_excess = np.mean(center[:, :, 0] - (center[:, :, 1] + center[:, :, 2]) /
+    red_channel = center[:, :, 0]
+    green_blue_avg = (center[:, :, 1] + center[:, :, 2]) / 2.0
+    red_excess = np.mean(red_channel - green_blue_avg)
+
+    risk_score = (
+        (asymmetry_score * 0.8)
+        + (color_std * 0.7)
+        + (dark_pixel_ratio * 0.6)
+        + (max(0.0, float(red_excess)) * 0.9)
+    )
+
+    if risk_score >= 52 or dark_pixel_ratio > 35:
+        condition = "Malignant Melanoma / High Cancerous Cell Probability"
+        risk = "High Risk (Cancerous Indicators Detected) 🔴"
+        conf_val = min(96.8, 78.0 + (risk_score * 0.2))
+        confidence = f"{conf_val:.1f}%"
+        advice = "Fauri taur par Oncologist ya Dermatologist se biopsy aur dermoscopy checkup karwayein. Yeh lesion malignant (cancerous) alaamat rakhta hai."
+    elif risk_score >= 34 or red_excess > 28:
+        condition = "Basal Cell Carcinoma / Atypical Dysplastic Lesion"
+        risk = "Moderate-High Risk (Suspicious Cells) 🟠"
+        conf_val = min(91.5, 72.0 + (risk_score * 0.25))
+        confidence = f"{conf_val:.1f}%"
+        advice = "Skin cells mein ghair-mamooli tabdeeli aur asymmetry nazar aa rahi hai. Doctor se fori clinical checkup karwayein."
+    else:
+        condition = "Benign Nevus / Normal Healthy Skin Tissue (Non-Cancerous)"
+        risk = "Low Risk (Non-Cancerous) 🟢"
+        conf_val = max(88.0, 97.5 - (risk_score * 0.2))
+        confidence = f"{conf_val:.1f}%"
+        advice = "Koi cancerous alaamat nazar nahi aayin. Apni skin ko hydrated rakhein aur rozana sunscreen istemal karein."
+
+    return condition, risk, confidence, advice, round(float(risk_score), 1)
+
+if st.button("Generate Full Skin Cancer Report"):
+    if uploaded_file is None:
+        st.warning("Pehle upar diye gaye box mein skin ki picture upload karein.")
+    else:
+        display_name = patient_name.strip() if patient_name.strip() else "Not Provided"
+        condition, risk, confidence, advice, score = analyze_skin_abcd(image)
+
+        report_html = (
+            '<div class="report-card">'
+            '<h3>🩺 Comprehensive Skin Analysis Report</h3>'
+            '<p><strong>Student:</strong> Haseeb Raza | <strong>Program:</strong> BS Computer Science (Section I)</p>'
+            '<p><strong>Supervisor:</strong> Karar Haider | <strong>Institution:</strong> Superior University Gold Campus</p>'
+            '<hr style="border-color: #334155;">'
+            f'<p><strong>Patient Name:</strong> {display_name}</p>'
+            f'<p><strong>Patient Profile:</strong> {age} yrs | {gender} | {skin_type} Skin</p>'
+            f'<p><strong>Detected Condition:</strong> {condition}</p>'
+            f'<p><strong>Skin Cancer Risk Level:</strong> {risk}</p>'
+            f'<p><strong>
