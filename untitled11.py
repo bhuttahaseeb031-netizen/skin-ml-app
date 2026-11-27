@@ -100,7 +100,7 @@ if run_btn:
             benign_prob = 16
             malignant_prob = 84
             advice = "Consult a dermatologist promptly for in-person dermoscopy evaluation."
-            medicines = "Specialist Prescription Required (Avoid self-medication; only Dermatologist-prescribed therapy)"
+            medicine_name = "Dermatologist-Prescribed Topical / Diagnostic Therapy Only (Consult Specialist Before Any Medication)"
         else:
             verdict = "Benign Pattern - Low Risk"
             risk_tier = "LOW RISK"
@@ -108,7 +108,7 @@ if run_btn:
             benign_prob = 95
             malignant_prob = 5
             advice = "Monitor regularly and use broad-spectrum SPF 50+ sunscreen daily."
-            medicines = "Mineral Sunscreen SPF 50+ (Zinc Oxide / Titanium Dioxide), Ceramide Moisturizer (CeraVe / Cetaphil), Gentle Cleanser"
+            medicine_name = "Broad-Spectrum Mineral Sunscreen SPF 50+ (Zinc Oxide / Titanium Dioxide), Ceramide Barrier Cream (CeraVe / Cetaphil), Gentle Fragrance-Free Cleanser"
 
         now_dt = datetime.datetime.now()
         report_date = now_dt.strftime("%Y-%m-%d")
@@ -116,22 +116,22 @@ if run_btn:
 
         rep_text = "DERMACARE GLOBAL - CLINICAL REPORT\n"
         rep_text += "==========================================\n"
-        rep_text += "Report ID    : " + report_id + "\n"
-        rep_text += "Date / Time  : " + now_dt.strftime("%Y-%m-%d %H:%M:%S") + "\n"
-        rep_text += "Patient Name : " + p_name + "\n"
-        rep_text += "Age / Gender : " + str(age) + " / " + gender + "\n"
-        rep_text += "Skin Type    : " + skin_type + "\n"
-        rep_text += "Body Site    : " + lesion_area + "\n"
-        rep_text += "UV Exposure  : " + uv_level + "\n"
-        rep_text += "Hydration    : " + str(water_cups) + " glasses (" + str(hydration) + "%)\n"
-        rep_text += "Sleep        : " + str(sleep_hrs) + " hours\n"
-        rep_text += "ABCDE Score  : " + str(abcde_total) + " / 5\n"
-        rep_text += "Dermal Index : " + str(wellness) + " / 100\n"
-        rep_text += "Risk Tier    : " + risk_tier + "\n"
-        rep_text += "AI Verdict   : " + verdict + " (" + conf + ")\n"
-        rep_text += "Medicines    : " + medicines + "\n"
-        rep_text += "Advice       : " + advice + "\n"
-        rep_text += "Created by   : Haseeb Bhutta\n"
+        rep_text += "Report ID     : " + report_id + "\n"
+        rep_text += "Date / Time   : " + now_dt.strftime("%Y-%m-%d %H:%M:%S") + "\n"
+        rep_text += "Patient Name  : " + p_name + "\n"
+        rep_text += "Age / Gender  : " + str(age) + " / " + gender + "\n"
+        rep_text += "Skin Type     : " + skin_type + "\n"
+        rep_text += "Body Site     : " + lesion_area + "\n"
+        rep_text += "UV Exposure   : " + uv_level + "\n"
+        rep_text += "Hydration     : " + str(water_cups) + " glasses (" + str(hydration) + "%)\n"
+        rep_text += "Sleep         : " + str(sleep_hrs) + " hours\n"
+        rep_text += "ABCDE Score   : " + str(abcde_total) + " / 5\n"
+        rep_text += "Dermal Index  : " + str(wellness) + " / 100\n"
+        rep_text += "Risk Tier     : " + risk_tier + "\n"
+        rep_text += "AI Verdict    : " + verdict + " (" + conf + ")\n"
+        rep_text += "Medicine Name : " + medicine_name + "\n"
+        rep_text += "Advice        : " + advice + "\n"
+        rep_text += "Created by    : Haseeb Bhutta\n"
         rep_text += "==========================================\n"
 
         record_row = {
@@ -147,7 +147,7 @@ if run_btn:
             "Dermal Index": str(wellness) + "/100",
             "Risk Tier": risk_tier,
             "AI Verdict": verdict,
-            "Medicines": medicines,
+            "Medicine Name": medicine_name,
             "Confidence": conf,
             "Created by": "Haseeb Bhutta"
         }
@@ -166,7 +166,7 @@ if run_btn:
         m3.metric("Dermal Index", str(wellness) + "/100")
         m4.metric("ABCDE Flags", str(abcde_total) + "/5")
 
-        st.info("**Suggested Care / Medicines:** " + medicines)
+        st.info("**Medicine Name:** " + medicine_name)
 
         ch_col, rp_col = st.columns([1, 1.2], gap="large")
         with ch_col:
