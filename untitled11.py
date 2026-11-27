@@ -3,11 +3,9 @@ from PIL import Image
 
 st.set_page_config(
     page_title="DermaAI | Skin Health & Cancer Predictor",
-    page_icon="🔬",
     layout="wide"
 )
 
-# Custom Modern Dark UI CSS
 css_code = """
 <style>
     .stApp {
@@ -45,22 +43,18 @@ css_code = """
         padding: 0.75rem 1.5rem;
         border-radius: 12px;
         font-size: 1rem;
-        transition: all 0.3s ease;
     }
     div.stButton > button:hover {
         background: linear-gradient(90deg, #38bdf8, #6366f1);
-        box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
         color: white;
     }
 </style>
 """
 st.markdown(css_code, unsafe_allow_html=True)
 
-# Header Section
-st.markdown('<div class="gradient-title">🔬 DermaAI: Skin Health & Cancer Predictor</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Upload a clear dermoscopy or skin image and enter patient lifestyle metrics for an instant AI diagnostic summary.</div>', unsafe_allow_html=True)
+st.markdown('<div class="gradient-title">DermaAI: Skin Health & Cancer Predictor</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Upload a clear skin image and enter patient lifestyle metrics for an instant AI diagnostic summary.</div>', unsafe_allow_html=True)
 
-# Two-Column Layout
 col1, col2 = st.columns([1, 1.3], gap="large")
 
 with col1:
@@ -73,7 +67,7 @@ with col1:
         image = Image.open(uploaded_file)
         st.image(image, caption="Uploaded Skin Sample", use_container_width=True)
     else:
-        st.info("👆 Please upload a clear, well-lit close-up photo of the skin area to begin.")
+        st.info("Please upload a clear, well-lit close-up photo of the skin area to begin.")
 
 with col2:
     st.markdown("### 2. Patient & Lifestyle Details")
@@ -103,16 +97,16 @@ with col2:
         diet_quality = st.selectbox("Diet Quality", ["Healthy", "Balanced", "Processed / Junk"])
 
     st.markdown("<br>", unsafe_allow_html=True)
-    generate_btn = st.button("✨ Generate Full Skin Cancer & Health Report")
+    generate_btn = st.button("Generate Full Skin Cancer & Health Report")
 
-# Report Generation Section
 if generate_btn:
     if not uploaded_file:
-        st.warning("⚠️ Please upload a skin image first before generating the report.")
+        st.warning("Please upload a skin image first before generating the report.")
     else:
         st.markdown("---")
-        display_name = patient_name if patient_name.strip() else "Patient"
-        st.subheader(f"📋 Diagnostic Report: {display_name} ({age} yrs • {skin_type} Skin)")
+        display_name = patient_name.strip() if patient_name.strip() else "Patient"
+        header_text = "Diagnostic Report: " + display_name + " (" + str(age) + " yrs | " + skin_type + " Skin)"
+        st.subheader(header_text)
 
         wellness_score = 70
         if water_intake >= 8:
@@ -130,18 +124,10 @@ if generate_btn:
         r1, r2, r3 = st.columns(3)
 
         with r1:
-            card1 = (
-                '<div class="glass-box">'
-                '<p style="color:#94a3b8; font-size:0.85rem; margin-bottom:4px;">AI Lesion Assessment</p>'
-                f'<h3 style="color:#34d399; margin:0;">{prediction_label}</h3>'
-                f'<p style="color:#64748b; font-size:0.8rem; margin-top:8px;">Model Confidence: {confidence}</p>'
-                '</div>'
-            )
+            card1 = '<div class="glass-box"><p style="color:#94a3b8; font-size:0.85rem; margin-bottom:4px;">AI Lesion Assessment</p><h3 style="color:#34d399; margin:0;">' + prediction_label + '</h3><p style="color:#64748b; font-size:0.8rem; margin-top:8px;">Model Confidence: ' + confidence + '</p></div>'
             st.markdown(card1, unsafe_allow_html=True)
 
         with r2:
-            card2 = (
-                '<div class="glass-box">'
-                '<p style="color:#94a3b8; font-size:0.85rem; margin-bottom:4px;">Skin Wellness Index</p>'
-                f'<h3 style="color:#38bdf8; margin:0;">{wellness_score} / 100</h3>'
-                f'<p style="color:#64748b; font-size:0.8rem; margin-top:8px;">{water_intake} glasses water • {sleep_hours}h sleep
+            metrics_text = str(water_intake) + " glasses water | " + str(sleep_hours) + "h sleep"
+            card2 = '<div class="glass-box"><p style="color:#94a3b8; font-size:0.85rem; margin-bottom:4px;">Skin Wellness Index</p><h3 style="color:#38bdf8; margin:0;">' + str(wellness_score) + ' / 100</h3><p style="color:#64748b; font-size:0.8rem; margin-top:8px;">' + metrics_text + '</p></div>'
+            st.
