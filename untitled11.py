@@ -1,201 +1,185 @@
-import streamlit as st
-import numpy as np
-from PIL import Image
-
-st.set_page_config(
-    page_title="Skin Health & Cancer Predictor",
-    layout="centered"
-)
-
-st.markdown(
-    """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DermaAI | Next-Gen Skin Health & Cancer Predictor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-    .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        color: #f8fafc;
-    }
-    header[data-testid="stHeader"] {
-        background-color: transparent;
-    }
-    h1, h2, h3 {
-        color: #38bdf8 !important;
-        font-family: 'Segoe UI', sans-serif;
-        font-weight: 700;
-    }
-    p, label, .stMarkdown {
-        color: #e2e8f0 !important;
-    }
-    section[data-testid="stFileUploaderDropzone"] {
-        background-color: #1e293b !important;
-        border: 2px dashed #38bdf8 !important;
-        border-radius: 12px;
-        padding: 20px;
-    }
-    div[data-baseweb="input"],
-    div[data-baseweb="input"] > div,
-    div[data-baseweb="base-input"],
-    div[data-baseweb="select"] > div {
-        background-color: #ffffff !important;
-        border: 2px solid #38bdf8 !important;
-        border-radius: 10px !important;
-    }
-    input[type="text"],
-    input[type="number"],
-    div[data-baseweb="select"] span,
-    div[data-baseweb="select"] div {
-        color: #000000 !important;
-        -webkit-text-fill-color: #000000 !important;
-        font-weight: 600 !important;
-    }
-    input::placeholder {
-        color: #475569 !important;
-        -webkit-text-fill-color: #475569 !important;
-    }
-    ul[role="listbox"],
-    ul[role="listbox"] li {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-    }
-    button[data-testid="stNumberInputStepDown"],
-    button[data-testid="stNumberInputStepUp"] {
-        color: #000000 !important;
-    }
-    /* Alert boxes (Risk Level) clear dark text */
-    div[data-testid="stAlert"] p {
-        color: #0f172a !important;
-        font-weight: 600 !important;
-    }
-    .stButton > button {
-        background: linear-gradient(90deg, #0284c7 0%, #0d9488 100%);
-        color: #ffffff !important;
-        border: none;
-        border-radius: 10px;
-        padding: 0.7rem 2rem;
-        font-weight: 600;
-        width: 100%;
-        margin-top: 15px;
-    }
+        body {
+            background: radial-gradient(circle at top left, #0f172a, #1e293b, #090d16);
+            color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .upload-zone {
+            border: 2px dashed rgba(56, 189, 248, 0.4);
+            transition: all 0.3s ease;
+        }
+        .upload-zone:hover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.05);
+        }
     </style>
-    """,
-    unsafe_allow_html=True
-)
+</head>
+<body class="p-4 md:p-8">
 
-st.title("Skin Health & Cancer Predictor")
-st.write("Upload skin image and enter patient details to generate the analysis report:")
-st.markdown("---")
+    <!-- Navbar -->
+    <nav class="max-w-6xl mx-auto flex justify-between items-center mb-10">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400">
+                <i class="fa-solid fa-microscope text-xl"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight">Derma<span class="text-sky-400">AI</span></span>
+        </div>
+        <span class="text-xs px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <i class="fa-solid fa-circle text-[8px] mr-1.5 animate-pulse"></i> AI Diagnostic Engine v2.4
+        </span>
+    </nav>
 
-st.subheader("Upload Skin Image")
-uploaded_file = st.file_uploader(
-    "Upload clear skin image (JPG, JPEG, PNG)",
-    type=["jpg", "jpeg", "png"]
-)
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Image Upload & Preview -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="glass-card rounded-3xl p-6">
+                <h2 class="text-lg font-semibold mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-camera-retro text-sky-400"></i> 1. Dermoscopy Image
+                </h2>
+                <p class="text-slate-400 text-xs mb-5">Upload a clear, well-lit macro photo of the skin area.</p>
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Skin Image", width=300)
+                <label for="skinImage" class="upload-zone rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer text-center relative overflow-hidden min-h-[260px]">
+                    <div id="uploadPrompt">
+                        <div class="w-14 h-14 rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                        </div>
+                        <p class="text-sm font-medium text-slate-200">Click to upload or drag & drop</p>
+                        <p class="text-xs text-slate-500 mt-1">JPG, JPEG, PNG (Max 200MB)</p>
+                    </div>
+                    <img id="imagePreview" class="hidden w-full h-60 object-cover rounded-xl" alt="Skin Preview" />
+                    <input type="file" id="skinImage" accept="image/png, image/jpeg, image/jpg" class="hidden" onchange="previewFile(event)">
+                </label>
 
-st.markdown("---")
+                <div class="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex gap-2.5">
+                    <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
+                    <span>For optimal accuracy, ensure no shadows or filters cover the lesion.</span>
+                </div>
+            </div>
+        </div>
 
-st.subheader("Patient & Lifestyle Details")
+        <!-- Right Column: Patient & Lifestyle Form -->
+        <div class="lg:col-span-7">
+            <div class="glass-card rounded-3xl p-6 md:p-8">
+                <h1 class="text-2xl md:text-3xl font-bold gradient-text mb-2">Skin Health & Cancer Predictor</h1>
+                <p class="text-slate-400 text-sm mb-6">Combine visual AI screening with patient lifestyle metrics for a comprehensive risk profile.</p>
 
-patient_name = st.text_input(
-    "Patient Name",
-    placeholder="Enter patient full name..."
-)
+                <form id="predictorForm" onsubmit="generateReport(event)" class="space-y-5">
+                    <!-- Row 1: Name & Age -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Patient Full Name</label>
+                            <input type="text" id="patientName" required placeholder="e.g., Ali Raza" 
+                                class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Age</label>
+                            <input type="number" id="age" value="24" min="1" max="120" required
+                                class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-400">
+                        </div>
+                    </div>
 
-col1, col2 = st.columns(2)
+                    <!-- Row 2: Gender & Skin Type -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Gender</label>
+                            <select id="gender" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-400">
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Skin Type</label>
+                            <select id="skinType" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-400">
+                                <option>Oily</option>
+                                <option>Dry</option>
+                                <option>Combination</option>
+                                <option>Sensitive</option>
+                                <option>Normal</option>
+                            </select>
+                        </div>
+                    </div>
 
-with col1:
-    age = st.number_input("Age", min_value=10, max_value=100, value=24)
-    gender = st.selectbox("Gender", ["Male", "Female"])
-    skin_type = st.selectbox(
-        "Skin Type",
-        ["Oily", "Dry", "Combination", "Normal", "Sensitive"]
-    )
-    water_intake = st.slider("Daily Water Intake (Glasses)", 1, 15, 6)
+                    <!-- Row 3: Interactive Sliders -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div class="bg-slate-900/40 p-4 rounded-2xl border border-slate-800">
+                            <div class="flex justify-between text-xs mb-2">
+                                <span class="text-slate-400"><i class="fa-solid fa-droplet text-sky-400 mr-1"></i> Daily Water Intake</span>
+                                <span class="font-bold text-sky-400"><span id="waterVal">6</span> Glasses</span>
+                            </div>
+                            <input type="range" id="waterIntake" min="1" max="15" value="6" oninput="document.getElementById('waterVal').innerText = this.value"
+                                class="w-full accent-sky-400 cursor-pointer">
+                        </div>
 
-with col2:
-    sleep_hours = st.slider("Sleep Hours", 3, 12, 7)
-    stress_level = st.selectbox("Stress Level", ["Low", "Medium", "High"])
-    diet_type = st.selectbox(
-        "Diet Quality",
-        ["Healthy", "Average", "Oily/Fast Food"]
-    )
+                        <div class="bg-slate-900/40 p-4 rounded-2xl border border-slate-800">
+                            <div class="flex justify-between text-xs mb-2">
+                                <span class="text-slate-400"><i class="fa-solid fa-moon text-indigo-400 mr-1"></i> Sleep Duration</span>
+                                <span class="font-bold text-indigo-400"><span id="sleepVal">7</span> Hours</span>
+                            </div>
+                            <input type="range" id="sleepHours" min="3" max="12" value="7" oninput="document.getElementById('sleepVal').innerText = this.value"
+                                class="w-full accent-indigo-400 cursor-pointer">
+                        </div>
+                    </div>
 
-st.markdown("---")
+                    <!-- Row 4: Stress & Diet -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Stress Level</label>
+                            <select id="stressLevel" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-400">
+                                <option>Low</option>
+                                <option>Moderate</option>
+                                <option>High</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">Diet Quality</label>
+                            <select id="dietQuality" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-400">
+                                <option>Healthy</option>
+                                <option>Balanced</option>
+                                <option>Processed / Junk</option>
+                            </select>
+                        </div>
+                    </div>
 
-def analyze_skin_abcd(img):
-    img_resized = img.resize((224, 224)).convert("RGB")
-    arr = np.array(img_resized, dtype=np.float32)
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold shadow-lg shadow-sky-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer mt-4">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Full Skin Health Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
 
-    center = arr[45:179, 45:179]
-    gray_center = np.mean(center, axis=2)
-
-    left_half = gray_center[:, :67]
-    right_half = np.fliplr(gray_center[:, 67:])
-    asymmetry_score = np.mean(np.abs(left_half - right_half))
-
-    color_std = np.std(center)
-    dark_pixel_ratio = np.mean(gray_center < 115) * 100
-
-    red_channel = center[:, :, 0]
-    green_blue_avg = (center[:, :, 1] + center[:, :, 2]) / 2.0
-    red_excess = np.mean(red_channel - green_blue_avg)
-
-    raw_score = (
-        (asymmetry_score * 0.8)
-        + (color_std * 0.7)
-        + (dark_pixel_ratio * 0.6)
-        + (max(0.0, float(red_excess)) * 0.9)
-    )
-    risk_score = min(98.5, raw_score)
-
-    if risk_score >= 52 or dark_pixel_ratio > 35:
-        condition = "Malignant Melanoma / High Cancerous Cell Probability"
-        risk = "High Risk (Cancerous Indicators Detected)"
-        conf_val = min(96.8, 78.0 + (risk_score * 0.18))
-        advice = "Consult an Oncologist or Dermatologist immediately for biopsy and dermoscopy."
-        level = "high"
-    elif risk_score >= 34 or red_excess > 28:
-        condition = "Basal Cell Carcinoma / Atypical Dysplastic Lesion"
-        risk = "Moderate-High Risk (Suspicious Cells)"
-        conf_val = min(91.5, 72.0 + (risk_score * 0.22))
-        advice = "Abnormal skin cell patterns detected. Schedule a clinical skin checkup soon."
-        level = "med"
-    else:
-        condition = "Benign Nevus / Normal Healthy Skin Tissue (Non-Cancerous)"
-        risk = "Low Risk (Non-Cancerous)"
-        conf_val = max(88.0, 97.5 - (risk_score * 0.2))
-        advice = "No cancerous indicators detected. Keep skin hydrated and use sunscreen daily."
-        level = "low"
-
-    conf_str = str(round(float(conf_val), 1)) + "%"
-    score_val = round(float(risk_score), 1)
-    return condition, risk, conf_str, advice, score_val, level
-
-if st.button("Generate Full Skin Cancer Report"):
-    if uploaded_file is None:
-        st.warning("Please upload a skin image first.")
-    else:
-        name_text = patient_name.strip() if patient_name.strip() else "Not Provided"
-        condition, risk, confidence, advice, score, level = analyze_skin_abcd(image)
-
-        profile_text = str(age) + " yrs | " + gender + " | " + skin_type + " Skin"
-        score_text = str(score) + " / 100"
-
-        st.markdown("---")
-        st.subheader("Comprehensive Skin Analysis Report")
-        st.write("**Patient Name:**", name_text)
-        st.write("**Patient Profile:**", profile_text)
-        st.write("**Detected Condition:**", condition)
-        st.write("**ABCD Lesion Risk Index:**", score_text)
-        st.write("**AI Model Confidence:**", confidence)
-
-        if level == "high":
-            st.error("**Risk Level:** " + risk + " — **Recommendation:** " + advice)
-        elif level == "med":
-            st.warning("**Risk Level:** " + risk + " — **Recommendation:** " + advice)
-        else:
-            st.success("**Risk Level:** " + risk + " — **Recommendation:** " + advice)
-
-        st.caption("Disclaimer: This AI screening report is for educational purposes only. Please consult a doctor for medical diagnosis.")
+    <!-- Dynamic Report Result Section (Hidden by default) -->
+    <section id="reportSection" class="max-w-6xl mx-auto mt-8 hidden">
+        <div class="glass-card rounded-3xl p-6 md:p-8 border-t-4 border-sky-400">
+            <div class="flex flex-wrap justify-between items-center gap-4 border-b border-slate-700/60 pb-4 mb-6">
+                <div>
+                    <span class="text-xs uppercase tracking-wider text-sky-400 font-semibold">Diagnostic Summary</span>
+                    <h3 class="text-xl font-bold" id="reportTitle">Patient Analysis Report</h3>
+                </div>
+                <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium border border-slate-600">
+                    <i class="fa-solid fa-print mr-1.5"></i> Print / Save PDF
+                </button>
