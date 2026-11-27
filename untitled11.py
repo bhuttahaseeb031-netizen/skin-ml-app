@@ -1,258 +1,135 @@
 import streamlit as st
 from PIL import Image
-import numpy as np
-import io
-from datetime import datetime
-from fpdf import FPDF
+import datetime
 
-# 1. Page Configuration (Hamesha sab se upar hona chahiye)
+# 1. Page Configuration
 st.set_page_config(
-    page_title="DermaAI | Skin Health & Cancer Predictor",
-    page_icon="🔬",
-    layout="wide"
+    page_title="DermaPro Clinical OS | AI Diagnostics",
+    page_icon="🏥",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# 2. Next-Level Dark Glassmorphism CSS
-css_code = """
+# 2. Modern Clinical Light SaaS CSS
+st.markdown("""
 <style>
-.stApp {
-    background: radial-gradient(circle at top left, #0f172a, #1e293b, #090d16);
-    color: #f8fafc;
-}
-.gradient-title {
-    background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 2.6rem;
-    font-weight: 800;
-    margin-bottom: 0.2rem;
-}
-.subtitle {
-    color: #94a3b8;
-    font-size: 1.05rem;
-    margin-bottom: 2rem;
-}
-.glass-box {
-    background: rgba(30, 41, 59, 0.65);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-}
-.result-badge-benign {
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid #10b981;
-    color: #34d399;
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 1.2rem;
-}
-.result-badge-malignant {
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid #ef4444;
-    color: #f87171;
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 1.2rem;
-}
-/* Input fields styling */
-div[data-baseweb="input"] > div {
-    background-color: rgba(15, 23, 42, 0.8) !important;
-    border-color: rgba(148, 163, 184, 0.3) !important;
-    color: #f8fafc !important;
-}
+    /* Clean Light Clinical Canvas */
+    .stApp {
+        background-color: #f4f7fb;
+        color: #0f172a;
+    }
+
+    /* Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background-color: #ffffff;
+        border-right: 1px solid #e2e8f0;
+    }
+
+    /* Fix all input & label visibility */
+    label, .stMarkdown p, h1, h2, h3, h4 {
+        color: #0f172a !important;
+    }
+
+    /* Top Medical Header Banner */
+    .med-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0d9488 100%);
+        padding: 28px 32px;
+        border-radius: 18px;
+        color: white !important;
+        margin-bottom: 24px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+    }
+    .med-header h1 {
+        color: #ffffff !important;
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+    .med-header p {
+        color: #cbd5e1 !important;
+        font-size: 0.95rem;
+        margin-top: 6px;
+        margin-bottom: 0;
+    }
+    .badge-live {
+        display: inline-block;
+        background: rgba(20, 184, 166, 0.2);
+        border: 1px solid #2dd4bf;
+        color: #5eead4 !important;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    /* White Elevated Cards */
+    .clinical-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        margin-bottom: 16px;
+    }
+    .metric-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b !important;
+        font-weight: 600;
+    }
+    .metric-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        margin: 4px 0;
+    }
+
+    /* Primary Action Button */
+    div.stButton > button {
+        width: 100%;
+        background: linear-gradient(90deg, #0284c7, #0d9488);
+        color: #ffffff !important;
+        font-weight: 700;
+        border: none;
+        padding: 0.7rem 1.2rem;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+    }
+    div.stButton > button:hover {
+        background: linear-gradient(90deg, #0369a1, #0f766e);
+        color: #ffffff !important;
+    }
 </style>
-"""
-st.markdown(css_code, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# 3. PDF Report Generator Function
-def generate_pdf_report(patient_name, patient_age, patient_gender, prediction, confidence, risk_level, advice):
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Header Banner
-    pdf.set_fill_color(15, 23, 42)
-    pdf.rect(0, 0, 210, 40, 'F')
-    pdf.set_text_color(56, 189, 248)
-    pdf.set_font("Helvetica", "B", 20)
-    pdf.cell(0, 18, "DermaAI Diagnostic Report", ln=True, align="C")
-    
-    pdf.set_text_color(203, 213, 225)
-    pdf.set_font("Helvetica", "", 10)
-    pdf.cell(0, 8, f"Generated on: {datetime.now().strftime('%d %B %Y, %I:%M %p')}", ln=True, align="C")
-    
-    pdf.ln(18)
-    
-    # Patient Details Section
-    pdf.set_text_color(15, 23, 42)
-    pdf.set_font("Helvetica", "B", 14)
-    pdf.cell(0, 10, "1. Patient Information", ln=True)
-    pdf.set_draw_color(200, 200, 200)
-    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
-    pdf.ln(4)
-    
-    pdf.set_font("Helvetica", "", 11)
-    pdf.cell(50, 8, "Patient Name:", border=0)
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.cell(0, 8, patient_name if patient_name.strip() else "Not Provided", ln=True)
-    
-    pdf.set_font("Helvetica", "", 11)
-    pdf.cell(50, 8, "Age / Gender:", border=0)
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.cell(0, 8, f"{patient_age} Years / {patient_gender}", ln=True)
-    pdf.ln(8)
-    
-    # AI Analysis Section
-    pdf.set_font("Helvetica", "B", 14)
-    pdf.cell(0, 10, "2. AI Screening Results", ln=True)
-    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
-    pdf.ln(4)
-    
-    pdf.set_font("Helvetica", "", 11)
-    pdf.cell(50, 8, "Detected Class:", border=0)
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.cell(0, 8, prediction, ln=True)
-    
-    pdf.set_font("Helvetica", "", 11)
-    pdf.cell(50, 8, "Confidence Score:", border=0)
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.cell(0, 8, f"{confidence:.2f}%", ln=True)
-    
-    pdf.set_font("Helvetica", "", 11)
-    pdf.cell(50, 8, "Risk Assessment:", border=0)
-    pdf.set_font("Helvetica", "B", 11)
-    pdf.cell(0, 8, risk_level, ln=True)
-    pdf.ln(8)
-    
-    # Clinical Recommendations
-    pdf.set_font("Helvetica", "B", 14)
-    pdf.cell(0, 10, "3. Clinical Recommendations", ln=True)
-    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
-    pdf.ln(4)
-    
-    pdf.set_font("Helvetica", "", 11)
-    pdf.multi_cell(0, 7, advice)
-    pdf.ln(12)
-    
-    # Medical Disclaimer
-    pdf.set_fill_color(241, 245, 249)
-    pdf.set_text_color(100, 116, 139)
-    pdf.set_font("Helvetica", "I", 9)
-    pdf.multi_cell(
-        0, 6,
-        "DISCLAIMER: This report is generated by an Artificial Intelligence screening model for educational and preliminary assessment purposes only. It is NOT a substitute for professional medical diagnosis. Please consult a certified dermatologist.",
-        fill=True
-    )
-    
-    return bytes(pdf.output())
+# 3. Top Header Banner
+st.markdown("""
+<div class="med-header">
+    <span class="badge-live">● DERMAPRO CLINICAL SUITE v3.0</span>
+    <h1>DermaPro AI — Dermatological Diagnostic Workstation</h1>
+    <p>Automated Dermoscopy Analysis, ABCDE Risk Scoring & Clinical Summary Generator</p>
+</div>
+""", unsafe_allow_html=True)
 
-# 4. Model Prediction Function (Replace dummy logic with your .pkl / .h5 model here)
-def predict_skin_lesion(image: Image.Image):
-    # Image preprocessing (RGB convert + resize)
-    img_rgb = image.convert("RGB").resize((224, 224))
-    img_array = np.array(img_rgb, dtype=np.float32) / 255.0
-    
-    # --- APNA TRAINED MODEL YAHAN LOAD KAREIN ---
-    # Example:
-    # model = pickle.load(open("skin_model.pkl", "rb"))
-    # pred = model.predict(...)
-    
-    # Filhal image brightness/variance based demo prediction taake app crash na ho:
-    mean_val = float(np.mean(img_array))
-    if mean_val > 0.45:
-        return (
-            "Benign Nevus (Non-Cancerous)",
-            94.6,
-            "Low Risk",
-            "The analyzed skin lesion shows regular borders and uniform pigmentation typical of a benign mole. Routine self-monitoring every 3 months is recommended."
-        )
-    else:
-        return (
-            "Suspicious Melanocytic Lesion",
-            88.4,
-            "High Risk - Dermatologist Review Advised",
-            "Irregular color distribution and asymmetry detected. Schedule an in-person dermoscopy examination with a qualified dermatologist promptly."
-        )
-
-# 5. Header UI
-st.markdown('<div class="gradient-title">DermaAI | Skin Health & Cancer Predictor</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">AI-Powered Dermatological Lesion Analysis & Instant PDF Diagnostic Reporting</div>', unsafe_allow_html=True)
-
-# 6. Main Layout Columns
-col1, col2 = st.columns([1, 1.2], gap="large")
-
-with col1:
-    st.markdown('<div class="glass-box">', unsafe_allow_html=True)
-    st.subheader("Patient Details & Image Upload")
+# 4. Left Sidebar: Patient Intake Form
+with st.sidebar:
+    st.markdown("## 🧑‍⚕️ Patient Intake")
+    st.caption("Enter patient profile before running AI scan.")
     
     patient_name = st.text_input("Patient Full Name", placeholder="e.g., Ali Raza")
-    c_age, c_gen = st.columns(2)
-    with c_age:
-        patient_age = st.number_input("Age", min_value=1, max_value=120, value=25)
-    with c_gen:
-        patient_gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+    col_a, col_b = st.columns(2)
+    with col_a:
+        age = st.number_input("Age", min_value=1, max_value=120, value=28)
+    with col_b:
+        gender = st.selectbox("Gender", ["Male", "Female", "Other"])
         
-    uploaded_file = st.file_uploader("Upload Dermoscopy / Skin Image (JPG, PNG)", type=["jpg", "jpeg", "png"])
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col2:
-    st.markdown('<div class="glass-box">', unsafe_allow_html=True)
-    st.subheader("Diagnostic Analysis & Report")
+    skin_type = st.selectbox("Fitzpatrick / Skin Type", ["Normal", "Oily", "Dry", "Combination", "Sensitive"])
+    lesion_location = st.selectbox("Lesion Body Location", ["Face / Neck", "Arm / Hand", "Back / Torso", "Leg / Foot", "Other"])
     
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Skin Lesion Image", width=280)
-        
-        if st.button("Run AI Diagnosis", type="primary", use_container_width=True):
-            with st.spinner("Analyzing cellular patterns and pigmentation..."):
-                prediction, confidence, risk_level, advice = predict_skin_lesion(image)
-                
-                # Save results in session state so PDF download doesn't reset page
-                st.session_state["diag_result"] = {
-                    "prediction": prediction,
-                    "confidence": confidence,
-                    "risk_level": risk_level,
-                    "advice": advice
-                }
-        
-        if "diag_result" in st.session_state:
-            res = st.session_state["diag_result"]
-            st.markdown("---")
-            
-            if "Low Risk" in res["risk_level"]:
-                st.markdown(f'<div class="result-badge-benign">Result: {res["prediction"]}</div>', unsafe_allow_html=True)
-            else:
-                st.markdown(f'<div class="result-badge-malignant">Result: {res["prediction"]}</div>', unsafe_allow_html=True)
-            
-            m1, m2 = st.columns(2)
-            m1.metric("AI Confidence", f"{res['confidence']:.1f}%")
-            m2.metric("Risk Status", res["risk_level"].split("-")[0].strip())
-            
-            st.info(f"**Recommendation:** {res['advice']}")
-            
-            # Generate PDF bytes
-            pdf_bytes = generate_pdf_report(
-                patient_name=patient_name,
-                patient_age=patient_age,
-                patient_gender=patient_gender,
-                prediction=res["prediction"],
-                confidence=res["confidence"],
-                risk_level=res["risk_level"],
-                advice=res["advice"]
-            )
-            
-            safe_name = patient_name.strip().replace(" ", "_") if patient_name.strip() else "Patient"
-            st.download_button(
-                label="Download Diagnostic PDF Report",
-                data=pdf_bytes,
-                file_name=f"DermaAI_Report_{safe_name}.pdf",
-                mime="application/pdf",
-                use_container_width=True
-            )
-    else:
-        st.info("Left side par patient details darj karein aur skin lesion ki clear image upload karein.")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown("### 🌿 Lifestyle Factors")
+    sun_exposure = st.select_slider("Daily UV / Sun Exposure", options=["Low", "Moderate", "High"])
+    water_intake = st.slider("Water Intake (Glasses/Day)", 1
