@@ -141,20 +141,68 @@ if run_btn:
         d_flag = "YES" if chk_d else "NO"
         e_flag = "YES" if chk_e else "NO"
 
-        rep_lines = [
-            "============================================================",
-            "        DERMACARE GLOBAL - CLINICAL ONCOLOGY DOSSIER        ",
-            "============================================================",
-            "Report ID       : " + report_id,
-            "Generated On    : " + now_dt.strftime("%B %d, %Y at %I:%M %p"),
-            "Specimen File   : " + img_name,
-            "------------------------------------------------------------",
-            "1. PATIENT & BIOMETRIC PROFILE",
-            "   Full Name    : " + p_name,
-            "   Age / Sex    : " + str(age) + " Years / " + gender,
-            "   Skin Type    : " + skin_type,
-            "   Body Site    : " + lesion_area,
-            "   UV Exposure  : " + uv_level,
-            "   Hydration    : " + str(water_cups) + " Glasses/Day (" + str(hydration) + "%)",
-            "   Sleep Cycle  : " + str(sleep_hrs) + " Hours/Night",
-            "
+        rep_text = "DERMACARE GLOBAL - CLINICAL ONCOLOGY DOSSIER\n"
+        rep_text += "============================================================\n"
+        rep_text += "Report ID       : " + report_id + "\n"
+        rep_text += "Generated On    : " + now_dt.strftime("%B %d, %Y at %I:%M %p") + "\n"
+        rep_text += "Specimen File   : " + img_name + "\n"
+        rep_text += "------------------------------------------------------------\n"
+        rep_text += "1. PATIENT & BIOMETRIC PROFILE\n"
+        rep_text += "Full Name       : " + p_name + "\n"
+        rep_text += "Age / Sex       : " + str(age) + " Years / " + gender + "\n"
+        rep_text += "Skin Type       : " + skin_type + "\n"
+        rep_text += "Body Site       : " + lesion_area + "\n"
+        rep_text += "UV Exposure     : " + uv_level + "\n"
+        rep_text += "Hydration       : " + str(water_cups) + " Glasses/Day (" + str(hydration) + "%)\n"
+        rep_text += "Sleep Cycle     : " + str(sleep_hrs) + " Hours/Night\n"
+        rep_text += "------------------------------------------------------------\n"
+        rep_text += "2. ABCDE CLINICAL SELF-ASSESSMENT (" + str(abcde_total) + "/5 FLAGS)\n"
+        rep_text += "[A] Asymmetry           : " + a_flag + "\n"
+        rep_text += "[B] Border Irregularity : " + b_flag + "\n"
+        rep_text += "[C] Color Variation     : " + c_flag + "\n"
+        rep_text += "[D] Diameter > 6mm      : " + d_flag + "\n"
+        rep_text += "[E] Evolving / Changing : " + e_flag + "\n"
+        rep_text += "------------------------------------------------------------\n"
+        rep_text += "3. AI DIAGNOSTIC & RISK SUMMARY\n"
+        rep_text += "Primary Verdict  : " + verdict + "\n"
+        rep_text += "Risk Tier        : " + risk_tier + "\n"
+        rep_text += "Confidence       : " + conf + " (Benign: " + str(benign_prob) + "% | Malignancy: " + str(malignant_prob) + "%)\n"
+        rep_text += "Dermal Index     : " + str(wellness) + " / 100\n"
+        rep_text += "------------------------------------------------------------\n"
+        rep_text += "4. CLINICAL RECOMMENDATION\n"
+        rep_text += action_plan + "\n"
+        rep_text += "Disclaimer: AI decision-support tool only; consult a board-certified dermatologist.\n"
+        rep_text += "Created by: Haseeb Bhutta\n"
+        rep_text += "============================================================\n"
+
+        new_entry = {
+            "Report ID": report_id,
+            "Date": report_date,
+            "Patient Name": p_name,
+            "Age": int(age),
+            "Sex": gender,
+            "Skin Type": skin_type,
+            "Location": lesion_area,
+            "UV Exposure": uv_level,
+            "Hydration": str(water_cups) + " glasses",
+            "Sleep": str(sleep_hrs) + " hrs",
+            "ABCDE Score": str(abcde_total) + "/5",
+            "Dermal Index": str(wellness) + "/100",
+            "Risk Tier": risk_tier,
+            "AI Verdict": verdict,
+            "Confidence": conf,
+            "Created By": "Haseeb Bhutta"
+        }
+        st.session_state.patient_records.append(new_entry)
+
+        st.session_state.saved_reports.append({
+            "title": report_id + " | " + p_name + " | " + risk_tier + " (" + report_date + ")",
+            "full_text": rep_text
+        })
+
+        st.subheader("Clinical Diagnostic Dossier: " + p_name + " (" + report_id + ")")
+
+        col_m1, col_m2, col_m3, col_m4 = st.columns(4)
+
+        m1_card = '<div class="white-card"><div class="card-tag">CLASSIFICATION</div><div style="color:' + v_color + ' !important; font-size:1.2rem; font-weight:800; margin:6px 0;">' + verdict + '</div><div style="font-size:0.8rem; color:#64748b !important;">Site: ' + lesion_area + '</div></div>'
+        m2_card = '<div class="white-card"><div class="card-tag">CONFIDENCE</div><div style="color:#0284c7 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + conf + '</div><div style="font-size:0.8rem; color:#64748b !important;">
