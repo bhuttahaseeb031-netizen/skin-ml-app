@@ -125,7 +125,6 @@ if run_btn:
 
         report_date = datetime.date.today().strftime("%Y-%m-%d")
 
-        # Save patient detail in session history
         new_entry = {
             "Date": report_date,
             "Patient Name": p_name,
@@ -143,4 +142,38 @@ if run_btn:
 
         st.subheader("Clinical Diagnostic Dossier: " + p_name + " (" + str(age) + "y | " + gender + ")")
 
-        k1, k2
+        k1, k2, k3, k4 = st.columns(4)
+
+        k1_html = '<div class="white-card"><div class="card-tag">CLASSIFICATION</div><div style="color:' + v_color + ' !important; font-size:1.2rem; font-weight:800; margin:6px 0;">' + verdict + '</div><div style="font-size:0.8rem; color:#64748b !important;">Site: ' + lesion_area + '</div></div>'
+        k2_html = '<div class="white-card"><div class="card-tag">CONFIDENCE</div><div style="color:#0284c7 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + conf + '</div><div style="font-size:0.8rem; color:#64748b !important;">DermaNet-Pro v5</div></div>'
+        k3_html = '<div class="white-card"><div class="card-tag">DERMAL INDEX</div><div style="color:#7c3aed !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + str(wellness) + ' / 100</div><div style="font-size:0.8rem; color:#64748b !important;">' + skin_type + '</div></div>'
+        k4_html = '<div class="white-card"><div class="card-tag">ABCDE SCORE</div><div style="color:#d97706 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + str(abcde_total) + ' / 5</div><div style="font-size:0.8rem; color:#64748b !important;">UV: ' + uv_level + '</div></div>'
+
+        k1.markdown(k1_html, unsafe_allow_html=True)
+        k2.markdown(k2_html, unsafe_allow_html=True)
+        k3.markdown(k3_html, unsafe_allow_html=True)
+        k4.markdown(k4_html, unsafe_allow_html=True)
+
+        g_col, t_col = st.columns([1.15, 1.15], gap="large")
+        with g_col:
+            st.markdown("#### Diagnostic Probability & Biomarkers")
+            st.bar_chart({
+                "Benign Probability (%)": benign_prob,
+                "Malignancy Risk (%)": malignant_prob,
+                "Dermal Hydration (%)": hydration,
+                "UV Protection Score": uv_def
+            })
+
+        with t_col:
+            st.markdown("#### Clinical Care & Prevention Protocol")
+            am_tip = "Apply broad-spectrum mineral SPF 50+ sunscreen daily and minimize direct midday UV exposure."
+            pm_tip = "Maintain skin barrier integrity with fragrance-free ceramide hydration and regular self-exams."
+            care_html = '<div class="white-card"><p><b style="color:#0284c7 !important;">Photoprotection Protocol:</b> ' + am_tip + '</p><p><b style="color:#059669 !important;">Clinical Follow-Up:</b> ' + pm_tip + '</p><p style="font-size:0.8rem; color:#64748b !important; margin-bottom:0;"><i>Note: AI triage decision-support only; final diagnosis requires a board-certified dermatologist.</i></p></div>'
+            st.markdown(care_html, unsafe_allow_html=True)
+
+            rep_lines = [
+                "DERMACARE GLOBAL - CLINICAL AI REPORT",
+                "Date: " + report_date,
+                "--------------------------------------------------",
+                "Patient Name   : " + p_name,
+                "Age / Sex      :
