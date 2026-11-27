@@ -10,7 +10,6 @@ st.set_page_config(
 
 css_code = """
 <style>
-    /* Clean Clinical Pearl-White & Deep Navy SaaS Theme */
     .stApp {
         background: linear-gradient(180deg, #f0f4f8 0%, #e2e8f0 100%);
         color: #0f172a;
@@ -19,12 +18,10 @@ css_code = """
     section[data-testid="stSidebar"] {display: none;}
     header[data-testid="stHeader"] {background: transparent !important;}
 
-    /* Force ALL Text, Labels, and Inputs to Dark High-Contrast */
     label, p, h1, h2, h3, h4, span, div {
         color: #0f172a !important;
     }
 
-    /* Crystal-Clear White Input Boxes with Dark Text */
     div[data-baseweb="input"] > div,
     div[data-baseweb="select"] > div {
         background-color: #ffffff !important;
@@ -38,7 +35,6 @@ css_code = """
         font-weight: 600 !important;
     }
 
-    /* Clean File Uploader Card */
     section[data-testid="stFileUploaderDropzone"] {
         background-color: #ffffff !important;
         border: 2px dashed #0284c7 !important;
@@ -55,7 +51,6 @@ css_code = """
         color: #ffffff !important;
     }
 
-    /* Royal Navy & Emerald Top Banner */
     .royal-banner {
         background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0f766e 100%);
         border-radius: 20px;
@@ -87,7 +82,6 @@ css_code = """
         margin-top: 6px;
     }
 
-    /* Elevated White Cards */
     .white-card {
         background-color: #ffffff;
         border: 1px solid #cbd5e1;
@@ -104,7 +98,6 @@ css_code = """
         font-weight: 700;
     }
 
-    /* Primary Emerald-Blue CTA Button */
     div.stButton > button {
         width: 100%;
         background: linear-gradient(90deg, #0284c7 0%, #0d9488 100%) !important;
@@ -122,40 +115,10 @@ css_code = """
 """
 st.markdown(css_code, unsafe_allow_html=True)
 
-# 1. Royal Clinical Header
 banner_html = '<div class="royal-banner"><span class="royal-pill">DERMACARE GLOBAL • CLINICAL AI WORKSTATION</span><div class="royal-h1">Precision Skin Health & Oncology Screening</div><div class="royal-p">High-clarity clinical interface powered by Deep Dermoscopy Vision & standardized ABCDE triage.</div></div>'
 st.markdown(banner_html, unsafe_allow_html=True)
 
-# 2. Top Telemetry Strip
 s1, s2, s3, s4 = st.columns(4)
 s1.markdown('<div class="white-card"><div class="card-tag">DIAGNOSTIC ENGINE</div><div style="color:#0284c7 !important; font-size:1.1rem; font-weight:800;">DermaNet-Pro v5</div></div>', unsafe_allow_html=True)
 s2.markdown('<div class="white-card"><div class="card-tag">CLINICAL ACCURACY</div><div style="color:#059669 !important; font-size:1.1rem; font-weight:800;">96.4% Sensitivity</div></div>', unsafe_allow_html=True)
-s3.markdown('<div class="white-card"><div class="card-tag">PROTOCOL</div><div style="color:#0f172a !important; font-size:1.1rem; font-weight:800;">Fitzpatrick + ABCDE</div></div>', unsafe_allow_html=True)
-s4.markdown('<div class="white-card"><div class="card-tag">STATUS</div><div style="color:#7c3aed !important; font-size:1.1rem; font-weight:800;">Ready • Real-Time</div></div>', unsafe_allow_html=True)
-
-# 3. Main 2-Column Workspace
-col_left, col_right = st.columns([1, 1.35], gap="large")
-
-with col_left:
-    st.markdown("#### 01. Dermoscopy Optical Input")
-    uploaded_file = st.file_uploader("Upload Lesion Image (JPG, JPEG, PNG)", type=["jpg", "jpeg", "png"])
-    if uploaded_file is not None:
-        img = Image.open(uploaded_file)
-        st.image(img, caption="Active Clinical Specimen", use_container_width=True)
-    else:
-        st.markdown('<div class="white-card"><p style="color:#475569 !important; margin:0;">Please upload a clear, well-lit close-up photo of the skin lesion to initiate AI analysis.</p></div>', unsafe_allow_html=True)
-
-with col_right:
-    st.markdown("#### 02. Patient Clinical & Biometric Profile")
-    r1_a, r1_b, r1_c = st.columns([2, 1, 1])
-    patient_name = r1_a.text_input("Patient Full Name", placeholder="e.g., Haseeb Raza")
-    age = r1_b.number_input("Age", min_value=1, max_value=120, value=24)
-    gender = r1_c.selectbox("Biological Sex", ["Male", "Female", "Other"])
-
-    r2_a, r2_b, r2_c = st.columns(3)
-    skin_type = r2_a.selectbox("Fitzpatrick Skin Type", ["Type I-II (Fair)", "Type III-IV (Medium)", "Type V-VI (Dark)"])
-    lesion_area = r2_b.selectbox("Anatomical Location", ["Head / Neck", "Upper Extremity", "Trunk / Back", "Lower Extremity", "Acral (Palm/Sole)"])
-    uv_level = r2_c.selectbox("UV Exposure Level", ["Low", "Moderate", "High / Chronic"])
-
-    r3_a, r3_b = st.columns(2)
-    water_cups = r3_a.slider("Daily Hydration (Glasses)", min_value=1, max
+s3.markdown('<div class="white-card"><div class="card-tag">PROTOCOL</div><div style="color
