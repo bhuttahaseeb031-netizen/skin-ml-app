@@ -100,6 +100,7 @@ if run_btn:
             benign_prob = 16
             malignant_prob = 84
             advice = "Consult a dermatologist promptly for in-person dermoscopy evaluation."
+            medicines = "Specialist Prescription Required (Avoid self-medication; only Dermatologist-prescribed therapy)"
         else:
             verdict = "Benign Pattern - Low Risk"
             risk_tier = "LOW RISK"
@@ -107,6 +108,7 @@ if run_btn:
             benign_prob = 95
             malignant_prob = 5
             advice = "Monitor regularly and use broad-spectrum SPF 50+ sunscreen daily."
+            medicines = "Mineral Sunscreen SPF 50+ (Zinc Oxide / Titanium Dioxide), Ceramide Moisturizer (CeraVe / Cetaphil), Gentle Cleanser"
 
         now_dt = datetime.datetime.now()
         report_date = now_dt.strftime("%Y-%m-%d")
@@ -127,6 +129,7 @@ if run_btn:
         rep_text += "Dermal Index : " + str(wellness) + " / 100\n"
         rep_text += "Risk Tier    : " + risk_tier + "\n"
         rep_text += "AI Verdict   : " + verdict + " (" + conf + ")\n"
+        rep_text += "Medicines    : " + medicines + "\n"
         rep_text += "Advice       : " + advice + "\n"
         rep_text += "Created by   : Haseeb Bhutta\n"
         rep_text += "==========================================\n"
@@ -144,6 +147,7 @@ if run_btn:
             "Dermal Index": str(wellness) + "/100",
             "Risk Tier": risk_tier,
             "AI Verdict": verdict,
+            "Medicines": medicines,
             "Confidence": conf,
             "Created by": "Haseeb Bhutta"
         }
@@ -161,6 +165,8 @@ if run_btn:
         m2.metric("Confidence", conf)
         m3.metric("Dermal Index", str(wellness) + "/100")
         m4.metric("ABCDE Flags", str(abcde_total) + "/5")
+
+        st.info("**Suggested Care / Medicines:** " + medicines)
 
         ch_col, rp_col = st.columns([1, 1.2], gap="large")
         with ch_col:
