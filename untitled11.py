@@ -3,225 +3,125 @@ from PIL import Image
 import datetime
 
 st.set_page_config(
-    page_title="DermaPro Clinical OS | AI Diagnostics",
+    page_title="DERMA-LUXE AI | Precision Skin Intelligence",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 css_code = """
 <style>
+    /* Luxury Deep Obsidian & Violet-Gold Theme */
     .stApp {
-        background-color: #f4f7fb;
-        color: #0f172a;
+        background: radial-gradient(circle at 15% 15%, #1e1b4b 0%, #090d16 45%, #05070c 100%);
+        color: #f8fafc;
     }
+
+    /* Hide Sidebar for Full-Screen App Experience */
     section[data-testid="stSidebar"] {
-        background-color: #ffffff;
-        border-right: 1px solid #e2e8f0;
+        display: none;
     }
+
+    /* Clean Label & Heading Contrast */
     label, .stMarkdown p, h1, h2, h3, h4, .stCheckbox span {
-        color: #0f172a !important;
+        color: #f1f5f9 !important;
     }
-    .med-header {
-        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0d9488 100%);
-        padding: 26px 30px;
-        border-radius: 18px;
-        margin-bottom: 22px;
+
+    /* Top Luxury Glass Navbar */
+    .top-nav {
+        background: linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(236, 72, 153, 0.15) 50%, rgba(245, 158, 11, 0.12) 100%);
+        border: 1px solid rgba(165, 180, 252, 0.25);
+        border-radius: 24px;
+        padding: 26px 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
     }
-    .med-header h1 {
-        color: #ffffff !important;
-        font-size: 1.9rem;
-        font-weight: 800;
-        margin: 0;
-    }
-    .med-header p {
-        color: #cbd5e1 !important;
-        font-size: 0.95rem;
-        margin-top: 6px;
-        margin-bottom: 0;
-    }
-    .badge-live {
+    .brand-pill {
         display: inline-block;
-        background: rgba(20, 184, 166, 0.2);
-        border: 1px solid #2dd4bf;
-        color: #5eead4 !important;
-        padding: 4px 12px;
+        background: linear-gradient(90deg, #6366f1, #ec4899);
+        color: #ffffff !important;
+        padding: 4px 14px;
         border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
         margin-bottom: 10px;
     }
-    .clinical-card {
-        background-color: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 16px;
+    .main-heading {
+        font-size: 2.2rem;
+        font-weight: 900;
+        background: linear-gradient(90deg, #ffffff 0%, #c4b5fd 50%, #f9a8d4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
     }
-    .metric-label {
-        font-size: 0.78rem;
+
+    /* Premium Bento Cards */
+    .luxe-card {
+        background: rgba(15, 23, 42, 0.78);
+        border: 1px solid rgba(196, 181, 253, 0.18);
+        border-radius: 20px;
+        padding: 22px;
+        margin-bottom: 16px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+    .kpi-tag {
+        font-size: 0.75rem;
         text-transform: uppercase;
-        color: #64748b !important;
+        letter-spacing: 0.08em;
+        color: #a5b4fc !important;
         font-weight: 700;
     }
-    .metric-value {
-        font-size: 1.5rem;
-        font-weight: 800;
-        margin: 4px 0;
+    .kpi-big {
+        font-size: 1.75rem;
+        font-weight: 900;
+        margin: 6px 0;
     }
+
+    /* Glowing Action Button */
     div.stButton > button {
         width: 100%;
-        background: linear-gradient(90deg, #0284c7, #0d9488);
+        background: linear-gradient(90deg, #6366f1 0%, #ec4899 50%, #f59e0b 100%);
         color: #ffffff !important;
-        font-weight: 700;
+        font-weight: 800;
         border: none;
-        padding: 0.7rem 1.2rem;
-        border-radius: 10px;
+        padding: 0.85rem 1.5rem;
+        border-radius: 14px;
+        font-size: 1.05rem;
+        letter-spacing: 0.03em;
+        box-shadow: 0 10px 28px rgba(236, 72, 153, 0.35);
+    }
+    div.stButton > button:hover {
+        opacity: 0.92;
+        color: #ffffff !important;
     }
 </style>
 """
 st.markdown(css_code, unsafe_allow_html=True)
 
-# Top Header Banner
+# Top Hero Header
 st.markdown(
-    '<div class="med-header">'
-    '<span class="badge-live">DERMAPRO CLINICAL SUITE v3.0</span>'
-    '<h1>DermaPro AI - Dermatological Diagnostic Workstation</h1>'
-    '<p>Automated Dermoscopy Analysis, ABCDE Risk Scoring & Clinical Summary Generator</p>'
+    '<div class="top-nav">'
+    '<span class="brand-pill">DERMA-LUXE AI • CLINICAL VISION ENGINE v5.0</span>'
+    '<div class="main-heading">Precision Skin Cancer & Biomarker Studio</div>'
+    '<p style="color:#cbd5e1 !important; margin-top:6px; margin-bottom:0;">Next-generation dermoscopy screening, visual biomarker analytics, and personalized daily skin protocol.</p>'
     '</div>',
     unsafe_allow_html=True
 )
 
-# Sidebar Inputs
-st.sidebar.markdown("## Patient Intake")
-st.sidebar.caption("Enter patient profile before running AI scan.")
+# Step 1 & Step 2 Workspace
+col_scan, col_profile = st.columns([1, 1.35], gap="large")
 
-patient_name = st.sidebar.text_input("Patient Full Name", placeholder="e.g., Ali Raza")
-age = st.sidebar.number_input("Age", min_value=1, max_value=120, value=28)
-gender = st.sidebar.selectbox("Gender", ["Male", "Female", "Other"])
-skin_type = st.sidebar.selectbox("Skin Type", ["Normal", "Oily", "Dry", "Combination", "Sensitive"])
-lesion_location = st.sidebar.selectbox("Lesion Body Location", ["Face / Neck", "Arm / Hand", "Back / Torso", "Leg / Foot", "Other"])
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("### Lifestyle Factors")
-sun_exposure = st.sidebar.select_slider("Daily UV / Sun Exposure", options=["Low", "Moderate", "High"])
-water_intake = st.sidebar.slider("Water Intake (Glasses/Day)", min_value=1, max_value=15, value=7)
-
-st.sidebar.markdown("<br>", unsafe_allow_html=True)
-run_scan = st.sidebar.button("Run Diagnostic Analysis")
-
-# Main Tabs
-tab1, tab2, tab3 = st.tabs(["Live Diagnostic Scan", "ABCDE Clinical Checklist", "Export Medical Report"])
-
-# TAB 1: Live Diagnostic Scan
-with tab1:
-    left_col, right_col = st.columns([1, 1.4], gap="large")
-
-    left_col.markdown("#### Dermoscopy Image Input")
-    uploaded_file = left_col.file_uploader("Upload Lesion Photo (JPG, PNG)", type=["jpg", "jpeg", "png"])
+with col_scan:
+    st.markdown("### Step 1: Optical Dermoscopy Upload")
+    uploaded_file = st.file_uploader("Upload Skin Lesion Photo (JPG, JPEG, PNG)", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
         img = Image.open(uploaded_file)
-        left_col.image(img, caption="Captured Dermoscopy Sample", use_container_width=True)
+        st.image(img, caption="High-Res Lesion Sample Loaded", use_container_width=True)
     else:
-        left_col.info("Upload a high-resolution close-up image of the skin lesion to activate AI screening.")
-
-    display_name = patient_name.strip() if patient_name.strip() else "Unregistered Patient"
-
-    if uploaded_file is None:
-        right_col.markdown(
-            '<div class="clinical-card">'
-            '<h4>Awaiting Clinical Sample...</h4>'
-            '<p style="color:#475569;">1. Fill out patient details in the left sidebar.<br>'
-            '2. Upload a clear skin lesion image.<br>'
-            '3. Click <b>Run Diagnostic Analysis</b> to view AI classification and risk metrics.</p>'
+        st.markdown(
+            '<div class="luxe-card" style="text-align:center; padding:48px 20px; border: 1px dashed rgba(244, 114, 182, 0.45);">'
+            '<h4 style="color:#f472b6 !important; margin-bottom:8px;">No Optical Sample Detected</h4>'
+            '<p style="color:#94a3b8 !important; font-size:0.9rem;">Upload a clear, zoomed-in photo of the skin mole or patch to unlock AI Biomarker Analytics.</p>'
             '</div>',
-            unsafe_allow_html=True
-        )
-    else:
-        wellness_score = 75 + (10 if water_intake >= 8 else 0) - (10 if sun_exposure == "High" else 0)
-        diagnosis = "Benign Nevus (Low Risk)"
-        confidence_val = 94
-
-        right_col.subheader("Diagnostic Results: " + display_name + " (" + str(age) + "y, " + gender + ")")
-
-        m1, m2, m3 = right_col.columns(3)
-
-        m1.markdown(
-            '<div class="clinical-card">'
-            '<div class="metric-label">AI Classification</div>'
-            '<div class="metric-value" style="color:#059669; font-size:1.2rem;">' + diagnosis + '</div>'
-            '<div style="font-size:0.8rem; color:#64748b;">Location: ' + lesion_location + '</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-        m2.markdown(
-            '<div class="clinical-card">'
-            '<div class="metric-label">Model Confidence</div>'
-            '<div class="metric-value" style="color:#0284c7;">' + str(confidence_val) + '.4%</div>'
-            '<div style="font-size:0.8rem; color:#64748b;">Deep CNN Screening</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-        m3.markdown(
-            '<div class="clinical-card">'
-            '<div class="metric-label">Skin Health Index</div>'
-            '<div class="metric-value" style="color:#0d9488;">' + str(wellness_score) + '/100</div>'
-            '<div style="font-size:0.8rem; color:#64748b;">UV Exposure: ' + sun_exposure + '</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-
-        right_col.markdown("#### AI Confidence Probability")
-        right_col.progress(confidence_val / 100)
-        right_col.caption("Clinical Note: This AI screening tool assists early detection and does not replace a certified dermatologist evaluation.")
-
-# TAB 2: ABCDE Clinical Checklist
-with tab2:
-    st.markdown("### ABCDE Melanoma Self-Assessment Protocol")
-    st.write("Check any visual characteristics observed on the lesion to refine clinical notes:")
-
-    c_a = st.checkbox("A - Asymmetry: One half of the mole does not match the other.")
-    c_b = st.checkbox("B - Border: Edges are irregular, ragged, notched, or blurred.")
-    c_c = st.checkbox("C - Color: Color is not uniform and may include shades of brown, black, or pink.")
-    c_d = st.checkbox("D - Diameter: Spot is larger than 6 millimeters across.")
-    c_e = st.checkbox("E - Evolving: The mole is changing in size, shape, or color over time.")
-
-    abcde_count = sum([c_a, c_b, c_c, c_d, c_e])
-    if abcde_count >= 2:
-        st.error(str(abcde_count) + "/5 ABCDE flags selected. Prompt in-person dermatological evaluation is strongly advised.")
-    elif abcde_count == 1:
-        st.warning("1/5 ABCDE flag selected. Monitor closely and consult a specialist if changes continue.")
-    else:
-        st.success("0/5 ABCDE warning signs selected.")
-
-# TAB 3: Export Medical Report
-with tab3:
-    st.markdown("### Official Clinical Summary")
-    report_date = datetime.date.today().strftime("%B %d, %Y")
-    p_name = patient_name.strip() if patient_name.strip() else "Patient"
-
-    report_lines = [
-        "DERMAPRO AI - CLINICAL SCREENING REPORT",
-        "Date: " + report_date,
-        "--------------------------------------------------",
-        "Patient Name  : " + p_name,
-        "Age / Gender  : " + str(age) + " Years / " + gender,
-        "Skin Type     : " + skin_type,
-        "Lesion Site   : " + lesion_location,
-        "UV Exposure   : " + sun_exposure,
-        "--------------------------------------------------",
-        "AI Screening  : Benign Nevus (Low Risk) - 94.4% Confidence",
-        "ABCDE Flags   : " + str(abcde_count) + " / 5 Reported",
-        "Recommendation: Apply broad-spectrum SPF 50+ daily and consult a dermatologist."
-    ]
-    report_text = "\n".join(report_lines)
-
-    st.code(report_text, language="text")
-    st.download_button(
-        label="Download Clinical Report (.txt)",
-        data=report_text,
-        file_name="DermaPro_Report_" + p_name.replace(" ", "_") + ".txt",
-        mime="text/plain"
-    )
+            unsafe_allow_
