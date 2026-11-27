@@ -16,12 +16,19 @@ if "saved_reports" not in st.session_state:
 
 st.markdown(
     "<style>"
-    ".stApp {background-color: #f1f5f9; color: #0f172a;}"
-    ".banner-box {background: linear-gradient(90deg, #0f172a, #1d4ed8, #0f766e); padding: 24px 28px; border-radius: 16px; margin-bottom: 18px;}"
-    ".banner-box h1 {color: #ffffff; margin: 0; font-size: 2rem;}"
-    ".banner-box p {color: #e2e8f0; margin: 6px 0 0 0;}"
-    ".info-box {background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 16px; margin-bottom: 14px;}"
-    "div.stButton > button {width: 100%; background-color: #0284c7; color: #ffffff; font-weight: bold; padding: 12px; border-radius: 10px; border: none;}"
+    "html, body, .stApp, [data-testid='stAppViewContainer'], .main, .block-container {"
+    "background: linear-gradient(135deg, #0f172a 0%, #172554 55%, #0f766e 100%) !important;"
+    "color: #f8fafc !important;"
+    "}"
+    "[data-testid='stHeader'] {background: transparent !important;}"
+    "h1, h2, h3, h4, label, .stMarkdown p {color: #f8fafc !important;}"
+    ".banner-box {background: linear-gradient(90deg, #0284c7, #0d9488, #1d4ed8); padding: 24px 28px; border-radius: 16px; margin-bottom: 18px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);}"
+    ".banner-box h1 {color: #ffffff !important; margin: 0; font-size: 2rem;}"
+    ".banner-box p {color: #e0f2fe !important; margin: 6px 0 0 0;}"
+    ".info-box {background-color: #ffffff; color: #0f172a !important; border: 1px solid #cbd5e1; border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);}"
+    ".info-box b, .info-box div {color: #0f172a !important;}"
+    "[data-testid='stMetricLabel'], [data-testid='stMetricValue'] {color: #f8fafc !important;}"
+    "div.stButton > button {width: 100%; background: linear-gradient(90deg, #06b6d4, #0284c7) !important; color: #ffffff !important; font-weight: bold; padding: 12px; border-radius: 10px; border: none;}"
     "</style>",
     unsafe_allow_html=True
 )
