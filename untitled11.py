@@ -74,7 +74,7 @@ with col_left:
 with col_right:
     st.markdown("#### 02. Patient Clinical & Biometric Profile")
     r1_a, r1_b, r1_c = st.columns([2, 1, 1])
-    patient_name = r1_a.text_input("Patient Full Name", placeholder="e.g., Haseeb Raza")
+    patient_name = r1_a.text_input("Patient Full Name (for example: Haseeb Bhutta)", placeholder="for example: Haseeb Bhutta")
     age = r1_b.number_input("Age", min_value=1, max_value=120, value=24)
     gender = r1_c.selectbox("Biological Sex", ["Male", "Female", "Other"])
 
@@ -157,113 +157,4 @@ if run_btn:
             "   UV Exposure  : " + uv_level,
             "   Hydration    : " + str(water_cups) + " Glasses/Day (" + str(hydration) + "%)",
             "   Sleep Cycle  : " + str(sleep_hrs) + " Hours/Night",
-            "------------------------------------------------------------",
-            "2. ABCDE CLINICAL SELF-ASSESSMENT (" + str(abcde_total) + "/5 FLAGS)",
-            "   [A] Asymmetry          : " + a_flag,
-            "   [B] Border Irregularity: " + b_flag,
-            "   [C] Color Variation    : " + c_flag,
-            "   [D] Diameter > 6mm     : " + d_flag,
-            "   [E] Evolving / Changing: " + e_flag,
-            "------------------------------------------------------------",
-            "3. AI DIAGNOSTIC & RISK SUMMARY",
-            "   Primary Verdict: " + verdict,
-            "   Risk Tier      : " + risk_tier,
-            "   Confidence     : " + conf + " (Benign: " + str(benign_prob) + "% | Malignancy: " + str(malignant_prob) + "%)",
-            "   Dermal Index   : " + str(wellness) + " / 100",
-            "------------------------------------------------------------",
-            "4. CLINICAL RECOMMENDATION",
-            "   " + action_plan,
-            "   Disclaimer: AI decision-support tool only; consult a",
-            "   board-certified dermatologist for medical diagnosis.",
-            "============================================================"
-        ]
-        rep_text = "\n".join(rep_lines)
-
-        new_entry = {
-            "Report ID": report_id,
-            "Date": report_date,
-            "Patient Name": p_name,
-            "Age": int(age),
-            "Sex": gender,
-            "Skin Type": skin_type,
-            "Location": lesion_area,
-            "UV Exposure": uv_level,
-            "Hydration": str(water_cups) + " glasses",
-            "Sleep": str(sleep_hrs) + " hrs",
-            "ABCDE Score": str(abcde_total) + "/5",
-            "Dermal Index": str(wellness) + "/100",
-            "Risk Tier": risk_tier,
-            "AI Verdict": verdict,
-            "Confidence": conf
-        }
-        st.session_state.patient_records.append(new_entry)
-
-        st.session_state.saved_reports.append({
-            "title": report_id + " | " + p_name + " | " + risk_tier + " (" + report_date + ")",
-            "full_text": rep_text
-        })
-
-        st.subheader("Clinical Diagnostic Dossier: " + p_name + " (" + report_id + ")")
-
-        col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-
-        m1_card = '<div class="white-card"><div class="card-tag">CLASSIFICATION</div><div style="color:' + v_color + ' !important; font-size:1.2rem; font-weight:800; margin:6px 0;">' + verdict + '</div><div style="font-size:0.8rem; color:#64748b !important;">Site: ' + lesion_area + '</div></div>'
-        m2_card = '<div class="white-card"><div class="card-tag">CONFIDENCE</div><div style="color:#0284c7 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + conf + '</div><div style="font-size:0.8rem; color:#64748b !important;">DermaNet-Pro v5</div></div>'
-        m3_card = '<div class="white-card"><div class="card-tag">DERMAL INDEX</div><div style="color:#7c3aed !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + str(wellness) + ' / 100</div><div style="font-size:0.8rem; color:#64748b !important;">' + skin_type + '</div></div>'
-        m4_card = '<div class="white-card"><div class="card-tag">ABCDE SCORE</div><div style="color:#d97706 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + str(abcde_total) + ' / 5</div><div style="font-size:0.8rem; color:#64748b !important;">UV: ' + uv_level + '</div></div>'
-
-        col_m1.markdown(m1_card, unsafe_allow_html=True)
-        col_m2.markdown(m2_card, unsafe_allow_html=True)
-        col_m3.markdown(m3_card, unsafe_allow_html=True)
-        col_m4.markdown(m4_card, unsafe_allow_html=True)
-
-        g_col, t_col = st.columns([1.15, 1.15], gap="large")
-        with g_col:
-            st.markdown("#### Diagnostic Probability & Biomarkers")
-            st.bar_chart({
-                "Benign Probability (%)": benign_prob,
-                "Malignancy Risk (%)": malignant_prob,
-                "Dermal Hydration (%)": hydration,
-                "UV Protection Score": uv_def
-            })
-
-        with t_col:
-            st.markdown("#### Executive Clinical Report Preview")
-            st.code(rep_text, language="text")
-
-            st.download_button(
-                label="Download Full Clinical Dossier (.txt)",
-                data=rep_text,
-                file_name=report_id + "_" + p_name.replace(" ", "_") + ".txt",
-                mime="text/plain"
-            )
-
-if len(st.session_state.patient_records) > 0:
-    st.markdown("---")
-    st.markdown("### Saved Patient Records Registry")
-    df_records = pd.DataFrame(st.session_state.patient_records)
-    st.dataframe(df_records, use_container_width=True)
-
-    csv_data = df_records.to_csv(index=False).encode("utf-8")
-    st.download_button(
-        label="Save & Download All Patient Details (.csv)",
-        data=csv_data,
-        file_name="Saved_Patients_Clinical_Records.csv",
-        mime="text/csv"
-    )
-
-if len(st.session_state.saved_reports) > 0:
-    st.markdown("---")
-    st.markdown("### Saved Full Reports Archive (" + str(len(st.session_state.saved_reports)) + ")")
-
-    all_reports_bundle = "\n\n\n".join([item["full_text"] for item in st.session_state.saved_reports])
-    st.download_button(
-        label="Download All Saved Full Reports (.txt)",
-        data=all_reports_bundle,
-        file_name="All_Saved_Clinical_Reports.txt",
-        mime="text/plain"
-    )
-
-    for idx, rep_item in enumerate(st.session_state.saved_reports, start=1):
-        with st.expander(str(idx) + ". " + rep_item["title"], expanded=False):
-            st.code(rep_item["full_text"], language="text")
+            "
