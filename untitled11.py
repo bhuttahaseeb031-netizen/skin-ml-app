@@ -2,139 +2,179 @@ import streamlit as st
 from PIL import Image
 import datetime
 
-st.set_page_config(page_title="VANGUARD DERMA OS", layout="wide")
+st.set_page_config(
+    page_title="MedCore Global AI | Dermatology & Oncology Portal",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
 css_code = """
 <style>
-    .stApp {background-color: #0b0e14; color: #e6edf3;}
+    /* Global Enterprise Dark Navy Theme (Stanford / Mayo AI Standard) */
+    .stApp {
+        background-color: #0a0f1c;
+        color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
     section[data-testid="stSidebar"] {display: none;}
-    label, p, h1, h2, h3, h4, span {color: #e6edf3 !important;}
 
-    /* Dark File Uploader Fix */
-    section[data-testid="stFileUploader"] {
-        background-color: #131822;
-        border: 1px dashed #00f5d4;
-        border-radius: 14px;
-        padding: 14px;
+    /* Fix ALL Text, Labels, and Inputs to Crisp High-Contrast */
+    label, p, h1, h2, h3, h4, span, div {
+        color: #f1f5f9;
     }
 
-    /* Industrial Top Telemetry Bar */
-    .telemetry-bar {
-        background: #131822;
-        border-left: 5px solid #00f5d4;
-        border-top: 1px solid #232b3a;
-        border-right: 1px solid #232b3a;
-        border-bottom: 1px solid #232b3a;
-        border-radius: 12px;
-        padding: 20px 26px;
-        margin-bottom: 22px;
+    /* Override Streamlit White Input Boxes & Selectboxes */
+    div[data-baseweb="input"] > div,
+    div[data-baseweb="select"] > div {
+        background-color: #131c31 !important;
+        border: 1px solid #2a3958 !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
     }
-    .sys-tag {
-        color: #00f5d4 !important;
-        font-family: monospace;
-        font-size: 0.8rem;
-        letter-spacing: 0.12em;
+    input {
+        color: #ffffff !important;
+    }
+
+    /* Override White File Uploader Dropzone */
+    section[data-testid="stFileUploaderDropzone"] {
+        background-color: #131c31 !important;
+        border: 1.5px dashed #38bdf8 !important;
+        border-radius: 14px !important;
+        padding: 20px !important;
+    }
+    section[data-testid="stFileUploaderDropzone"] button {
+        background-color: #1e293b !important;
+        color: #38bdf8 !important;
+        border: 1px solid #38bdf8 !important;
+    }
+
+    /* Institutional Top Header */
+    .global-header {
+        background: linear-gradient(135deg, #0f172a 0%, #172554 60%, #1e3a8a 100%);
+        border: 1px solid #2563eb;
+        border-radius: 16px;
+        padding: 26px 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+    }
+    .inst-badge {
+        display: inline-block;
+        background: rgba(56, 189, 248, 0.15);
+        border: 1px solid #38bdf8;
+        color: #7dd3fc !important;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.72rem;
         font-weight: 700;
+        letter-spacing: 0.08em;
+        margin-bottom: 10px;
     }
-    .sys-title {
-        font-size: 2rem;
+    .portal-title {
+        font-size: 2.1rem;
         font-weight: 800;
         color: #ffffff !important;
-        margin: 4px 0;
+        margin: 0;
+        letter-spacing: -0.02em;
+    }
+    .portal-sub {
+        color: #cbd5e1 !important;
+        font-size: 0.95rem;
+        margin-top: 6px;
     }
 
-    /* Carbon Panels */
-    .carbon-panel {
-        background: #131822;
-        border: 1px solid #232b3a;
+    /* Enterprise Medical Cards */
+    .med-card {
+        background-color: #111827;
+        border: 1px solid #1f2937;
         border-radius: 14px;
         padding: 20px;
         margin-bottom: 16px;
     }
-    .panel-label {
-        font-family: monospace;
-        font-size: 0.75rem;
-        color: #8b949e !important;
+    .card-kicker {
+        font-size: 0.72rem;
         text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8 !important;
+        font-weight: 700;
     }
-    .panel-val {
+    .card-metric {
         font-size: 1.65rem;
         font-weight: 800;
-        margin-top: 4px;
+        margin: 6px 0;
     }
 
-    /* Electric Cyan CTA Button */
+    /* Primary Medical Blue CTA */
     div.stButton > button {
         width: 100%;
-        background: #00f5d4;
-        color: #061018 !important;
-        font-weight: 800;
+        background: linear-gradient(90deg, #2563eb 0%, #0284c7 100%);
+        color: #ffffff !important;
+        font-weight: 700;
         border: none;
-        padding: 0.8rem 1.4rem;
+        padding: 0.85rem 1.5rem;
         border-radius: 10px;
         font-size: 1rem;
-        letter-spacing: 0.04em;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
     }
     div.stButton > button:hover {
-        background: #00d4b8;
-        color: #061018 !important;
+        background: linear-gradient(90deg, #3b82f6 0%, #0ea5e9 100%);
+        color: #ffffff !important;
     }
 </style>
 """
 st.markdown(css_code, unsafe_allow_html=True)
 
-# Top Telemetry Header
-header_box = '<div class="telemetry-bar"><div class="sys-tag">[ SYSTEM ONLINE • DERMOSCOPY NEURAL CORE v6.0 ]</div><div class="sys-title">VANGUARD DERMA DIAGNOSTICS</div><p style="color:#8b949e !important; margin:0;">High-precision skin lesion classification, UV stress telemetry, and clinical risk profiling.</p></div>'
-st.markdown(header_box, unsafe_allow_html=True)
+# Top Institutional Header
+header_html = '<div class="global-header"><span class="inst-badge">MEDCORE GLOBAL HEALTH • AI DERMATOLOGY & ONCOLOGY DIVISION</span><div class="portal-title">Clinical Dermoscopy & Skin Cancer Triage Portal</div><div class="portal-sub">Enterprise AI Decision-Support System • Standardized ABCDE Protocol & Patient Risk Stratification</div></div>'
+st.markdown(header_html, unsafe_allow_html=True)
 
-# Main Workspace
+# Main 2-Column Enterprise Layout
 col_left, col_right = st.columns([1, 1.35], gap="large")
 
 with col_left:
-    st.markdown("### // 01. OPTICAL SCANNER")
-    uploaded_file = st.file_uploader("Upload Dermoscopy Image (JPG, PNG)", type=["jpg", "jpeg", "png"])
+    st.markdown("### Step 1: Dermoscopy Image Capture")
+    uploaded_file = st.file_uploader("Upload Clinical Lesion Image (JPG, JPEG, PNG)", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:
         img = Image.open(uploaded_file)
-        st.image(img, caption="Target Lesion Specimen", use_container_width=True)
+        st.image(img, caption="Verified Clinical Specimen", use_container_width=True)
     else:
-        st.markdown('<div class="carbon-panel"><p style="color:#8b949e !important; margin:0;">Awaiting high-resolution lesion photo. Ensure clear lighting without glare.</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="med-card"><p style="color:#94a3b8 !important; margin:0; font-size:0.9rem;">Upload a macro dermoscopy or well-lit clinical photograph of the lesion to initiate neural feature analysis.</p></div>', unsafe_allow_html=True)
 
 with col_right:
-    st.markdown("### // 02. SUBJECT PARAMETERS")
+    st.markdown("### Step 2: Patient Clinical Intake")
     r1_a, r1_b, r1_c = st.columns([2, 1, 1])
-    patient_name = r1_a.text_input("Subject Name", placeholder="Enter full name")
-    age = r1_b.number_input("Age", min_value=1, max_value=120, value=25)
-    gender = r1_c.selectbox("Gender", ["Male", "Female", "Other"])
+    patient_name = r1_a.text_input("Patient Full Name", placeholder="e.g., Haseeb Raza")
+    age = r1_b.number_input("Age (Years)", min_value=1, max_value=120, value=25)
+    gender = r1_c.selectbox("Biological Sex", ["Male", "Female", "Other"])
 
     r2_a, r2_b, r2_c = st.columns(3)
-    skin_type = r2_a.selectbox("Skin Profile", ["Normal", "Oily", "Dry", "Combination", "Sensitive"])
-    lesion_area = r2_b.selectbox("Anatomical Site", ["Face / Neck", "Arm / Hand", "Back / Torso", "Leg / Foot", "Other"])
-    uv_level = r2_c.selectbox("UV Exposure", ["Low", "Moderate", "High"])
+    skin_type = r2_a.selectbox("Fitzpatrick Skin Type", ["Type I-II (Fair)", "Type III-IV (Medium/Olive)", "Type V-VI (Dark)"])
+    lesion_area = r2_b.selectbox("Anatomical Location", ["Head / Neck", "Upper Extremity", "Trunk / Back", "Lower Extremity", "Acral (Palm/Sole)"])
+    uv_level = r2_c.selectbox("UV Exposure History", ["Low", "Moderate", "High / Chronic"])
 
     r3_a, r3_b = st.columns(2)
     water_cups = r3_a.slider("Daily Hydration (Glasses)", min_value=1, max_value=15, value=8)
-    sleep_hrs = r3_b.slider("Sleep Cycle (Hours)", min_value=3, max_value=12, value=7)
+    sleep_hrs = r3_b.slider("Restorative Sleep (Hours)", min_value=3, max_value=12, value=7)
 
-    st.markdown("#### ABCDE Clinical Indicators")
+    st.markdown("### Step 3: Standardized ABCDE Criteria")
     f1, f2, f3 = st.columns(3)
-    chk_a = f1.checkbox("A: Asymmetry")
-    chk_b = f2.checkbox("B: Irregular Border")
-    chk_c = f3.checkbox("C: Multi-Color")
+    chk_a = f1.checkbox("A — Asymmetry")
+    chk_b = f2.checkbox("B — Border Irregularity")
+    chk_c = f3.checkbox("C — Color Variegation")
 
     f4, f5 = st.columns(2)
-    chk_d = f4.checkbox("D: Diameter > 6mm")
-    chk_e = f5.checkbox("E: Evolving Shape")
+    chk_d = f4.checkbox("D — Diameter > 6 mm")
+    chk_e = f5.checkbox("E — Evolving / Changing")
 
     st.markdown("<br>", unsafe_allow_html=True)
-    run_btn = st.button("EXECUTE DIAGNOSTIC SCAN")
+    run_btn = st.button("Run Clinical AI Assessment")
 
-# Results Section
+# Diagnostic Dossier Output
 if run_btn:
     if uploaded_file is None:
-        st.warning("Upload a skin image in Section 01 before executing the scan.")
+        st.warning("Please upload a clinical lesion image in Step 1 before running the assessment.")
     else:
         st.markdown("---")
-        p_name = patient_name.strip() if patient_name.strip() else "Subject-01"
+        p_name = patient_name.strip() if patient_name.strip() else "Patient Record #01"
         abcde_total = sum([chk_a, chk_b, chk_c, chk_d, chk_e])
 
         hydration = min(100, water_cups * 10)
@@ -143,32 +183,5 @@ if run_btn:
         wellness = int((hydration + uv_def + barrier) / 3)
 
         if abcde_total >= 2:
-            verdict = "HIGH ALERT - CONSULT SPECIALIST"
-            v_color = "#ff4d6d"
-            conf = "89.4%"
-        else:
-            verdict = "BENIGN / LOW RISK"
-            v_color = "#00f5d4"
-            conf = "96.8%"
-
-        st.subheader("TELEMETRY REPORT // " + p_name.upper() + " (" + str(age) + "Y)")
-
-        k1, k2, k3, k4 = st.columns(4)
-        k1.markdown('<div class="carbon-panel"><div class="panel-label">DIAGNOSIS</div><div class="panel-val" style="color:' + v_color + '; font-size:1.15rem;">' + verdict + '</div></div>', unsafe_allow_html=True)
-        k2.markdown('<div class="carbon-panel"><div class="panel-label">CONFIDENCE</div><div class="panel-val" style="color:#00bbf9;">' + conf + '</div></div>', unsafe_allow_html=True)
-        k3.markdown('<div class="carbon-panel"><div class="panel-label">SKIN INDEX</div><div class="panel-val" style="color:#fee440;">' + str(wellness) + '/100</div></div>', unsafe_allow_html=True)
-        k4.markdown('<div class="carbon-panel"><div class="panel-label">ABCDE FLAGS</div><div class="panel-val" style="color:#f15bb5;">' + str(abcde_total) + ' / 5</div></div>', unsafe_allow_html=True)
-
-        g_col, t_col = st.columns([1.2, 1], gap="large")
-        with g_col:
-            st.markdown("#### BIOMARKER TELEMETRY")
-            st.bar_chart({"Hydration": hydration, "UV Shield": uv_def, "Skin Barrier": barrier, "Overall": wellness})
-
-        with t_col:
-            st.markdown("#### CLINICAL ACTION PROTOCOL")
-            am_tip = "Apply broad-spectrum SPF 50+ PA++++ every 3 hours outdoors."
-            pm_tip = "Use barrier-repair ceramide cream suited for " + skin_type + " skin."
-            st.markdown('<div class="carbon-panel"><p><b style="color:#00f5d4;">DAYTIME:</b> ' + am_tip + '</p><p><b style="color:#00bbf9;">NIGHTTIME:</b> ' + pm_tip + '</p></div>', unsafe_allow_html=True)
-
-            rep = "VANGUARD DERMA REPORT\nSubject: " + p_name + " (" + str(age) + "y, " + gender + ")\nSite: " + lesion_area + " | Skin: " + skin_type + "\nDiagnosis: " + verdict + " (" + conf + ")\nSkin Index: " + str(wellness) + "/100 | ABCDE: " + str(abcde_total) + "/5\n"
-            st.download_button("EXPORT TELEMETRY REPORT (.TXT)", data=rep, file_name="Vanguard_Derma_Report.txt", mime="text/plain")
+            verdict = "High Priority — Dermatology Referral"
+            v_color = "#f87171"
