@@ -29,6 +29,9 @@ st.markdown(
     ".info-box b, .info-box div {color: #0f172a !important;}"
     "[data-testid='stMetricLabel'], [data-testid='stMetricValue'] {color: #f8fafc !important;}"
     "div.stButton > button {width: 100%; background: linear-gradient(90deg, #06b6d4, #0284c7) !important; color: #ffffff !important; font-weight: bold; padding: 12px; border-radius: 10px; border: none;}"
+    "div.stButton > button p, div.stButton > button span, div.stButton > button div {color: #ffffff !important; font-weight: 700 !important;}"
+    "div.stDownloadButton > button {background-color: #ffffff !important; color: #0f172a !important; border: 2px solid #38bdf8 !important; font-weight: 800 !important; padding: 10px 18px !important; border-radius: 10px !important;}"
+    "div.stDownloadButton > button p, div.stDownloadButton > button span, div.stDownloadButton > button div {color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; font-weight: 800 !important;}"
     "</style>",
     unsafe_allow_html=True
 )
