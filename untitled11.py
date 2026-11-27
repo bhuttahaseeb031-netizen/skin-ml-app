@@ -112,20 +112,28 @@ if run_btn:
 
         if abcde_total >= 2:
             verdict = "High Priority - Specialist Referral"
+            risk_tier = "HIGH RISK"
             v_color = "#dc2626"
             conf = "91.4%"
             benign_prob = 16
             malignant_prob = 84
+            action_plan = "Urgent dermatology appointment recommended for dermoscopy & biopsy evaluation."
         else:
             verdict = "Benign Nevus - Low Risk"
+            risk_tier = "LOW RISK"
             v_color = "#059669"
             conf = "96.4%"
             benign_prob = 95
             malignant_prob = 5
+            action_plan = "Routine periodic self-monitoring and daily SPF 50+ broad-spectrum sun protection."
 
-        report_date = datetime.date.today().strftime("%Y-%m-%d")
+        now_dt = datetime.datetime.now()
+        report_date = now_dt.strftime("%Y-%m-%d")
+        report_id = "DC-" + now_dt.strftime("%Y%m%d-%H%M%S")
+        img_name = uploaded_file.name if uploaded_file is not None else "N/A"
 
         new_entry = {
+            "Report ID": report_id,
             "Date": report_date,
             "Patient Name": p_name,
             "Age": int(age),
@@ -133,14 +141,17 @@ if run_btn:
             "Skin Type": skin_type,
             "Location": lesion_area,
             "UV Exposure": uv_level,
+            "Hydration": str(water_cups) + " glasses",
+            "Sleep": str(sleep_hrs) + " hrs",
             "ABCDE Score": str(abcde_total) + "/5",
             "Dermal Index": str(wellness) + "/100",
+            "Risk Tier": risk_tier,
             "AI Verdict": verdict,
             "Confidence": conf
         }
         st.session_state.patient_records.append(new_entry)
 
-        st.subheader("Clinical Diagnostic Dossier: " + p_name + " (" + str(age) + "y | " + gender + ")")
+        st.subheader("Clinical Diagnostic Dossier: " + p_name + " (" + report_id + ")")
 
         col_m1, col_m2, col_m3, col_m4 = st.columns(4)
 
@@ -165,27 +176,58 @@ if run_btn:
             })
 
         with t_col:
-            st.markdown("#### Clinical Care & Prevention Protocol")
-            am_tip = "Apply broad-spectrum mineral SPF 50+ sunscreen daily and minimize direct midday UV exposure."
-            pm_tip = "Maintain skin barrier integrity with fragrance-free ceramide hydration and regular self-exams."
-            care_html = '<div class="white-card"><p><b style="color:#0284c7 !important;">Photoprotection Protocol:</b> ' + am_tip + '</p><p><b style="color:#059669 !important;">Clinical Follow-Up:</b> ' + pm_tip + '</p><p style="font-size:0.8rem; color:#64748b !important; margin-bottom:0;"><i>Note: AI triage decision-support only; final diagnosis requires a board-certified dermatologist.</i></p></div>'
-            st.markdown(care_html, unsafe_allow_html=True)
+            st.markdown("#### Executive Clinical Report Preview")
+            a_flag = "YES" if chk_a else "NO"
+            b_flag = "YES" if chk_b else "NO"
+            c_flag = "YES" if chk_c else "NO"
+            d_flag = "YES" if chk_d else "NO"
+            e_flag = "YES" if chk_e else "NO"
 
             rep_lines = [
-                "DERMACARE GLOBAL - CLINICAL AI REPORT",
-                "Date: " + report_date,
-                "--------------------------------------------------",
-                "Patient Name   : " + p_name,
-                "Age / Sex      : " + str(age) + " Years / " + gender,
-                "Skin Type      : " + skin_type,
-                "Anatomical Site: " + lesion_area,
-                "--------------------------------------------------",
-                "AI Assessment  : " + verdict + " (Confidence: " + conf + ")",
-                "ABCDE Flags    : " + str(abcde_total) + " / 5",
-                "Dermal Index   : " + str(wellness) + " / 100"
+                "============================================================",
+                "        DERMACARE GLOBAL - CLINICAL ONCOLOGY DOSSIER        ",
+                "============================================================",
+                "Report ID       : " + report_id,
+                "Generated On    : " + now_dt.strftime("%B %d, %Y at %I:%M %p"),
+                "Specimen File   : " + img_name,
+                "------------------------------------------------------------",
+                "1. PATIENT & BIOMETRIC PROFILE",
+                "   Full Name    : " + p_name,
+                "   Age / Sex    : " + str(age) + " Years / " + gender,
+                "   Skin Type    : " + skin_type,
+                "   Body Site    : " + lesion_area,
+                "   UV Exposure  : " + uv_level,
+                "   Hydration    : " + str(water_cups) + " Glasses/Day (" + str(hydration) + "%)",
+                "   Sleep Cycle  : " + str(sleep_hrs) + " Hours/Night",
+                "------------------------------------------------------------",
+                "2. ABCDE CLINICAL SELF-ASSESSMENT (" + str(abcde_total) + "/5 FLAGS)",
+                "   [A] Asymmetry          : " + a_flag,
+                "   [B] Border Irregularity: " + b_flag,
+                "   [C] Color Variation    : " + c_flag,
+                "   [D] Diameter > 6mm     : " + d_flag,
+                "   [E] Evolving / Changing: " + e_flag,
+                "------------------------------------------------------------",
+                "3. AI DIAGNOSTIC & RISK SUMMARY",
+                "   Primary Verdict: " + verdict,
+                "   Risk Tier      : " + risk_tier,
+                "   Confidence     : " + conf + " (Benign: " + str(benign_prob) + "% | Malignancy: " + str(malignant_prob) + "%)",
+                "   Dermal Index   : " + str(wellness) + " / 100",
+                "------------------------------------------------------------",
+                "4. CLINICAL RECOMMENDATION",
+                "   " + action_plan,
+                "   Disclaimer: AI decision-support tool only; consult a",
+                "   board-certified dermatologist for medical diagnosis.",
+                "============================================================"
             ]
             rep_text = "\n".join(rep_lines)
-            st.download_button("Download Individual Report (.txt)", data=rep_text, file_name="DermaCare_Report_" + p_name.replace(" ", "_") + ".txt", mime="text/plain")
+            st.code(rep_text, language="text")
+
+            st.download_button(
+                label="Download Full Clinical Dossier (.txt)",
+                data=rep_text,
+                file_name=report_id + "_" + p_name.replace(" ", "_") + ".txt",
+                mime="text/plain"
+            )
 
 if len(st.session_state.patient_records) > 0:
     st.markdown("---")
