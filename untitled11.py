@@ -12,6 +12,9 @@ st.set_page_config(
 if "patient_records" not in st.session_state:
     st.session_state.patient_records = []
 
+if "saved_reports" not in st.session_state:
+    st.session_state.saved_reports = []
+
 css_code = (
     '<style>'
     '.stApp {background: linear-gradient(180deg, #f0f4f8 0%, #e2e8f0 100%); color: #0f172a;}'
@@ -132,6 +135,50 @@ if run_btn:
         report_id = "DC-" + now_dt.strftime("%Y%m%d-%H%M%S")
         img_name = uploaded_file.name if uploaded_file is not None else "N/A"
 
+        a_flag = "YES" if chk_a else "NO"
+        b_flag = "YES" if chk_b else "NO"
+        c_flag = "YES" if chk_c else "NO"
+        d_flag = "YES" if chk_d else "NO"
+        e_flag = "YES" if chk_e else "NO"
+
+        rep_lines = [
+            "============================================================",
+            "        DERMACARE GLOBAL - CLINICAL ONCOLOGY DOSSIER        ",
+            "============================================================",
+            "Report ID       : " + report_id,
+            "Generated On    : " + now_dt.strftime("%B %d, %Y at %I:%M %p"),
+            "Specimen File   : " + img_name,
+            "------------------------------------------------------------",
+            "1. PATIENT & BIOMETRIC PROFILE",
+            "   Full Name    : " + p_name,
+            "   Age / Sex    : " + str(age) + " Years / " + gender,
+            "   Skin Type    : " + skin_type,
+            "   Body Site    : " + lesion_area,
+            "   UV Exposure  : " + uv_level,
+            "   Hydration    : " + str(water_cups) + " Glasses/Day (" + str(hydration) + "%)",
+            "   Sleep Cycle  : " + str(sleep_hrs) + " Hours/Night",
+            "------------------------------------------------------------",
+            "2. ABCDE CLINICAL SELF-ASSESSMENT (" + str(abcde_total) + "/5 FLAGS)",
+            "   [A] Asymmetry          : " + a_flag,
+            "   [B] Border Irregularity: " + b_flag,
+            "   [C] Color Variation    : " + c_flag,
+            "   [D] Diameter > 6mm     : " + d_flag,
+            "   [E] Evolving / Changing: " + e_flag,
+            "------------------------------------------------------------",
+            "3. AI DIAGNOSTIC & RISK SUMMARY",
+            "   Primary Verdict: " + verdict,
+            "   Risk Tier      : " + risk_tier,
+            "   Confidence     : " + conf + " (Benign: " + str(benign_prob) + "% | Malignancy: " + str(malignant_prob) + "%)",
+            "   Dermal Index   : " + str(wellness) + " / 100",
+            "------------------------------------------------------------",
+            "4. CLINICAL RECOMMENDATION",
+            "   " + action_plan,
+            "   Disclaimer: AI decision-support tool only; consult a",
+            "   board-certified dermatologist for medical diagnosis.",
+            "============================================================"
+        ]
+        rep_text = "\n".join(rep_lines)
+
         new_entry = {
             "Report ID": report_id,
             "Date": report_date,
@@ -150,6 +197,11 @@ if run_btn:
             "Confidence": conf
         }
         st.session_state.patient_records.append(new_entry)
+
+        st.session_state.saved_reports.append({
+            "title": report_id + " | " + p_name + " | " + risk_tier + " (" + report_date + ")",
+            "full_text": rep_text
+        })
 
         st.subheader("Clinical Diagnostic Dossier: " + p_name + " (" + report_id + ")")
 
@@ -177,49 +229,6 @@ if run_btn:
 
         with t_col:
             st.markdown("#### Executive Clinical Report Preview")
-            a_flag = "YES" if chk_a else "NO"
-            b_flag = "YES" if chk_b else "NO"
-            c_flag = "YES" if chk_c else "NO"
-            d_flag = "YES" if chk_d else "NO"
-            e_flag = "YES" if chk_e else "NO"
-
-            rep_lines = [
-                "============================================================",
-                "        DERMACARE GLOBAL - CLINICAL ONCOLOGY DOSSIER        ",
-                "============================================================",
-                "Report ID       : " + report_id,
-                "Generated On    : " + now_dt.strftime("%B %d, %Y at %I:%M %p"),
-                "Specimen File   : " + img_name,
-                "------------------------------------------------------------",
-                "1. PATIENT & BIOMETRIC PROFILE",
-                "   Full Name    : " + p_name,
-                "   Age / Sex    : " + str(age) + " Years / " + gender,
-                "   Skin Type    : " + skin_type,
-                "   Body Site    : " + lesion_area,
-                "   UV Exposure  : " + uv_level,
-                "   Hydration    : " + str(water_cups) + " Glasses/Day (" + str(hydration) + "%)",
-                "   Sleep Cycle  : " + str(sleep_hrs) + " Hours/Night",
-                "------------------------------------------------------------",
-                "2. ABCDE CLINICAL SELF-ASSESSMENT (" + str(abcde_total) + "/5 FLAGS)",
-                "   [A] Asymmetry          : " + a_flag,
-                "   [B] Border Irregularity: " + b_flag,
-                "   [C] Color Variation    : " + c_flag,
-                "   [D] Diameter > 6mm     : " + d_flag,
-                "   [E] Evolving / Changing: " + e_flag,
-                "------------------------------------------------------------",
-                "3. AI DIAGNOSTIC & RISK SUMMARY",
-                "   Primary Verdict: " + verdict,
-                "   Risk Tier      : " + risk_tier,
-                "   Confidence     : " + conf + " (Benign: " + str(benign_prob) + "% | Malignancy: " + str(malignant_prob) + "%)",
-                "   Dermal Index   : " + str(wellness) + " / 100",
-                "------------------------------------------------------------",
-                "4. CLINICAL RECOMMENDATION",
-                "   " + action_plan,
-                "   Disclaimer: AI decision-support tool only; consult a",
-                "   board-certified dermatologist for medical diagnosis.",
-                "============================================================"
-            ]
-            rep_text = "\n".join(rep_lines)
             st.code(rep_text, language="text")
 
             st.download_button(
@@ -242,3 +251,19 @@ if len(st.session_state.patient_records) > 0:
         file_name="Saved_Patients_Clinical_Records.csv",
         mime="text/csv"
     )
+
+if len(st.session_state.saved_reports) > 0:
+    st.markdown("---")
+    st.markdown("### Saved Full Reports Archive (" + str(len(st.session_state.saved_reports)) + ")")
+
+    all_reports_bundle = "\n\n\n".join([item["full_text"] for item in st.session_state.saved_reports])
+    st.download_button(
+        label="Download All Saved Full Reports (.txt)",
+        data=all_reports_bundle,
+        file_name="All_Saved_Clinical_Reports.txt",
+        mime="text/plain"
+    )
+
+    for idx, rep_item in enumerate(st.session_state.saved_reports, start=1):
+        with st.expander(str(idx) + ". " + rep_item["title"], expanded=False):
+            st.code(rep_item["full_text"], language="text")
