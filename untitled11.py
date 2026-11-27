@@ -142,17 +142,17 @@ if run_btn:
 
         st.subheader("Clinical Diagnostic Dossier: " + p_name + " (" + str(age) + "y | " + gender + ")")
 
-        k1, k2, k3, k4 = st.columns(4)
+        col_m1, col_m2, col_m3, col_m4 = st.columns(4)
 
-        k1_html = '<div class="white-card"><div class="card-tag">CLASSIFICATION</div><div style="color:' + v_color + ' !important; font-size:1.2rem; font-weight:800; margin:6px 0;">' + verdict + '</div><div style="font-size:0.8rem; color:#64748b !important;">Site: ' + lesion_area + '</div></div>'
-        k2_html = '<div class="white-card"><div class="card-tag">CONFIDENCE</div><div style="color:#0284c7 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + conf + '</div><div style="font-size:0.8rem; color:#64748b !important;">DermaNet-Pro v5</div></div>'
-        k3_html = '<div class="white-card"><div class="card-tag">DERMAL INDEX</div><div style="color:#7c3aed !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + str(wellness) + ' / 100</div><div style="font-size:0.8rem; color:#64748b !important;">' + skin_type + '</div></div>'
-        k4_html = '<div class="white-card"><div class="card-tag">ABCDE SCORE</div><div style="color:#d97706 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + str(abcde_total) + ' / 5</div><div style="font-size:0.8rem; color:#64748b !important;">UV: ' + uv_level + '</div></div>'
+        m1_card = '<div class="white-card"><div class="card-tag">CLASSIFICATION</div><div style="color:' + v_color + ' !important; font-size:1.2rem; font-weight:800; margin:6px 0;">' + verdict + '</div><div style="font-size:0.8rem; color:#64748b !important;">Site: ' + lesion_area + '</div></div>'
+        m2_card = '<div class="white-card"><div class="card-tag">CONFIDENCE</div><div style="color:#0284c7 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + conf + '</div><div style="font-size:0.8rem; color:#64748b !important;">DermaNet-Pro v5</div></div>'
+        m3_card = '<div class="white-card"><div class="card-tag">DERMAL INDEX</div><div style="color:#7c3aed !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + str(wellness) + ' / 100</div><div style="font-size:0.8rem; color:#64748b !important;">' + skin_type + '</div></div>'
+        m4_card = '<div class="white-card"><div class="card-tag">ABCDE SCORE</div><div style="color:#d97706 !important; font-size:1.65rem; font-weight:800; margin:4px 0;">' + str(abcde_total) + ' / 5</div><div style="font-size:0.8rem; color:#64748b !important;">UV: ' + uv_level + '</div></div>'
 
-        k1.markdown(k1_html, unsafe_allow_html=True)
-        k2.markdown(k2_html, unsafe_allow_html=True)
-        k3.markdown(k3_html, unsafe_allow_html=True)
-        k4.markdown(k4_html, unsafe_allow_html=True)
+        col_m1.markdown(m1_card, unsafe_allow_html=True)
+        col_m2.markdown(m2_card, unsafe_allow_html=True)
+        col_m3.markdown(m3_card, unsafe_allow_html=True)
+        col_m4.markdown(m4_card, unsafe_allow_html=True)
 
         g_col, t_col = st.columns([1.15, 1.15], gap="large")
         with g_col:
@@ -176,4 +176,27 @@ if run_btn:
                 "Date: " + report_date,
                 "--------------------------------------------------",
                 "Patient Name   : " + p_name,
-                "Age / Sex      :
+                "Age / Sex      : " + str(age) + " Years / " + gender,
+                "Skin Type      : " + skin_type,
+                "Anatomical Site: " + lesion_area,
+                "--------------------------------------------------",
+                "AI Assessment  : " + verdict + " (Confidence: " + conf + ")",
+                "ABCDE Flags    : " + str(abcde_total) + " / 5",
+                "Dermal Index   : " + str(wellness) + " / 100"
+            ]
+            rep_text = "\n".join(rep_lines)
+            st.download_button("Download Individual Report (.txt)", data=rep_text, file_name="DermaCare_Report_" + p_name.replace(" ", "_") + ".txt", mime="text/plain")
+
+if len(st.session_state.patient_records) > 0:
+    st.markdown("---")
+    st.markdown("### Saved Patient Records Registry")
+    df_records = pd.DataFrame(st.session_state.patient_records)
+    st.dataframe(df_records, use_container_width=True)
+
+    csv_data = df_records.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label="Save & Download All Patient Details (.csv)",
+        data=csv_data,
+        file_name="Saved_Patients_Clinical_Records.csv",
+        mime="text/csv"
+    )
