@@ -3,66 +3,71 @@ from PIL import Image
 import datetime
 
 st.set_page_config(
-    page_title="DERMAVISION PRO | Global AI Dermatology Suite",
+    page_title="DERMACARE GLOBAL | AI Clinical Portal",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 css_code = """
 <style>
-    /* Flagship Linear / Apple Dark Pro Canvas */
+    /* Clean Clinical Pearl-White & Deep Navy SaaS Theme */
     .stApp {
-        background: radial-gradient(circle at 50% 0%, #172033 0%, #090d16 55%, #05070c 100%);
-        color: #f8fafc;
-        font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, #f0f4f8 0%, #e2e8f0 100%);
+        color: #0f172a;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     section[data-testid="stSidebar"] {display: none;}
     header[data-testid="stHeader"] {background: transparent !important;}
 
-    /* Crisp High-Contrast Typography */
+    /* Force ALL Text, Labels, and Inputs to Dark High-Contrast */
     label, p, h1, h2, h3, h4, span, div {
-        color: #f1f5f9;
+        color: #0f172a !important;
     }
 
-    /* Dark Sleek Inputs & Dropdowns */
+    /* Crystal-Clear White Input Boxes with Dark Text */
     div[data-baseweb="input"] > div,
     div[data-baseweb="select"] > div {
-        background-color: rgba(15, 23, 42, 0.9) !important;
-        border: 1px solid rgba(148, 163, 184, 0.25) !important;
+        background-color: #ffffff !important;
+        border: 1.5px solid #cbd5e1 !important;
         border-radius: 10px !important;
-        color: #ffffff !important;
+        color: #0f172a !important;
     }
-    input {color: #ffffff !important;}
-
-    /* Dark Glass Uploader */
-    section[data-testid="stFileUploaderDropzone"] {
-        background-color: rgba(15, 23, 42, 0.75) !important;
-        border: 1.5px dashed #38bdf8 !important;
-        border-radius: 16px !important;
-        padding: 24px !important;
-    }
-    section[data-testid="stFileUploaderDropzone"] button {
-        background: linear-gradient(90deg, #0284c7, #2563eb) !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 8px !important;
+    input {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a !important;
         font-weight: 600 !important;
     }
 
-    /* Top Flagship Hero Banner */
-    .flagship-hero {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
-        border: 1px solid rgba(56, 189, 248, 0.35);
+    /* Clean File Uploader Card */
+    section[data-testid="stFileUploaderDropzone"] {
+        background-color: #ffffff !important;
+        border: 2px dashed #0284c7 !important;
+        border-radius: 16px !important;
+        padding: 20px !important;
+    }
+    section[data-testid="stFileUploaderDropzone"] button {
+        background-color: #0284c7 !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 8px !important;
+    }
+    section[data-testid="stFileUploaderDropzone"] button span {
+        color: #ffffff !important;
+    }
+
+    /* Royal Navy & Emerald Top Banner */
+    .royal-banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0f766e 100%);
         border-radius: 20px;
         padding: 28px 34px;
-        margin-bottom: 18px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+        margin-bottom: 20px;
+        box-shadow: 0 14px 35px rgba(15, 23, 42, 0.18);
     }
-    .hero-pill {
+    .royal-pill {
         display: inline-block;
-        background: rgba(56, 189, 248, 0.14);
-        border: 1px solid rgba(56, 189, 248, 0.5);
-        color: #38bdf8 !important;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #ffffff !important;
         padding: 4px 12px;
         border-radius: 999px;
         font-size: 0.72rem;
@@ -70,96 +75,75 @@ css_code = """
         letter-spacing: 0.08em;
         margin-bottom: 10px;
     }
-    .hero-h1 {
-        font-size: 2.3rem;
+    .royal-h1 {
+        font-size: 2.2rem;
         font-weight: 900;
-        background: linear-gradient(90deg, #ffffff 0%, #bae6fd 50%, #38bdf8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: #ffffff !important;
         margin: 0;
-        letter-spacing: -0.02em;
     }
-    .hero-p {
-        color: #94a3b8 !important;
+    .royal-p {
+        color: #e2e8f0 !important;
         font-size: 0.96rem;
         margin-top: 6px;
     }
 
-    /* Status Strip Cards */
-    .strip-card {
-        background: rgba(15, 23, 42, 0.7);
-        border: 1px solid rgba(148, 163, 184, 0.16);
-        border-radius: 14px;
-        padding: 14px 18px;
-        margin-bottom: 20px;
+    /* Elevated White Cards */
+    .white-card {
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
     }
-    .strip-lbl {
-        font-size: 0.7rem;
+    .card-tag {
+        font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: #94a3b8 !important;
+        color: #64748b !important;
         font-weight: 700;
     }
-    .strip-val {
-        font-size: 1.05rem;
-        font-weight: 800;
-        color: #f8fafc !important;
-        margin-top: 2px;
-    }
 
-    /* Section Panel Box */
-    .pro-panel {
-        background: rgba(15, 23, 42, 0.72);
-        border: 1px solid rgba(148, 163, 184, 0.18);
-        border-radius: 18px;
-        padding: 22px;
-        margin-bottom: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    }
-
-    /* Primary Glowing CTA Button */
+    /* Primary Emerald-Blue CTA Button */
     div.stButton > button {
         width: 100%;
-        background: linear-gradient(90deg, #0ea5e9 0%, #2563eb 50%, #4f46e5 100%);
-        color: #ffffff !important;
-        font-weight: 800;
-        border: none;
-        padding: 0.9rem 1.5rem;
-        border-radius: 12px;
-        font-size: 1.05rem;
-        letter-spacing: 0.02em;
-        box-shadow: 0 10px 28px rgba(14, 165, 233, 0.35);
+        background: linear-gradient(90deg, #0284c7 0%, #0d9488 100%) !important;
+        border: none !important;
+        padding: 0.9rem 1.5rem !important;
+        border-radius: 12px !important;
+        font-size: 1.05rem !important;
+        box-shadow: 0 8px 20px rgba(2, 132, 199, 0.28) !important;
     }
-    div.stButton > button:hover {
-        background: linear-gradient(90deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
+    div.stButton > button p {
         color: #ffffff !important;
+        font-weight: 800 !important;
     }
 </style>
 """
 st.markdown(css_code, unsafe_allow_html=True)
 
-# 1. Flagship Hero Banner
-hero_html = '<div class="flagship-hero"><span class="hero-pill">DERMAVISION PRO • GLOBAL CLINICAL AI PLATFORM</span><div class="hero-h1">Next-Generation Dermoscopy & Oncology Triage</div><div class="hero-p">Enterprise-grade skin lesion screening powered by Deep Vision Neural Networks & standardized ABCDE clinical scoring.</div></div>'
-st.markdown(hero_html, unsafe_allow_html=True)
+# 1. Royal Clinical Header
+banner_html = '<div class="royal-banner"><span class="royal-pill">DERMACARE GLOBAL • CLINICAL AI WORKSTATION</span><div class="royal-h1">Precision Skin Health & Oncology Screening</div><div class="royal-p">High-clarity clinical interface powered by Deep Dermoscopy Vision & standardized ABCDE triage.</div></div>'
+st.markdown(banner_html, unsafe_allow_html=True)
 
-# 2. Live System Telemetry Strip (4 Top Mini Cards)
+# 2. Top Telemetry Strip
 s1, s2, s3, s4 = st.columns(4)
-s1.markdown('<div class="strip-card"><div class="strip-lbl">NEURAL ARCHITECTURE</div><div class="strip-val" style="color:#38bdf8 !important;">DermaNet-V4 Pro</div></div>', unsafe_allow_html=True)
-s2.markdown('<div class="strip-card"><div class="strip-lbl">VALIDATION ACCURACY</div><div class="strip-val" style="color:#34d399 !important;">96.4% Sensitivity</div></div>', unsafe_allow_html=True)
-s3.markdown('<div class="strip-card"><div class="strip-lbl">CLINICAL STANDARD</div><div class="strip-val">Fitzpatrick + ABCDE</div></div>', unsafe_allow_html=True)
-s4.markdown('<div class="strip-card"><div class="strip-lbl">SYSTEM STATUS</div><div class="strip-val" style="color:#a78bfa !important;">Online • Instant Triage</div></div>', unsafe_allow_html=True)
+s1.markdown('<div class="white-card"><div class="card-tag">DIAGNOSTIC ENGINE</div><div style="color:#0284c7 !important; font-size:1.1rem; font-weight:800;">DermaNet-Pro v5</div></div>', unsafe_allow_html=True)
+s2.markdown('<div class="white-card"><div class="card-tag">CLINICAL ACCURACY</div><div style="color:#059669 !important; font-size:1.1rem; font-weight:800;">96.4% Sensitivity</div></div>', unsafe_allow_html=True)
+s3.markdown('<div class="white-card"><div class="card-tag">PROTOCOL</div><div style="color:#0f172a !important; font-size:1.1rem; font-weight:800;">Fitzpatrick + ABCDE</div></div>', unsafe_allow_html=True)
+s4.markdown('<div class="white-card"><div class="card-tag">STATUS</div><div style="color:#7c3aed !important; font-size:1.1rem; font-weight:800;">Ready • Real-Time</div></div>', unsafe_allow_html=True)
 
-# 3. Main Workspace (2 Balanced Columns)
+# 3. Main 2-Column Workspace
 col_left, col_right = st.columns([1, 1.35], gap="large")
 
 with col_left:
     st.markdown("#### 01. Dermoscopy Optical Input")
-    uploaded_file = st.file_uploader("Drop High-Resolution Lesion Image (JPG, PNG)", type=["jpg", "jpeg", "png"])
+    uploaded_file = st.file_uploader("Upload Lesion Image (JPG, JPEG, PNG)", type=["jpg", "jpeg", "png"])
     if uploaded_file is not None:
         img = Image.open(uploaded_file)
         st.image(img, caption="Active Clinical Specimen", use_container_width=True)
     else:
-        st.markdown('<div class="pro-panel"><p style="color:#94a3b8 !important; margin:0; font-size:0.9rem;">Upload a macro dermoscopy photo or sharp close-up image of the skin area to begin neural feature extraction.</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="white-card"><p style="color:#475569 !important; margin:0;">Please upload a clear, well-lit close-up photo of the skin lesion to initiate AI analysis.</p></div>', unsafe_allow_html=True)
 
 with col_right:
     st.markdown("#### 02. Patient Clinical & Biometric Profile")
@@ -174,4 +158,4 @@ with col_right:
     uv_level = r2_c.selectbox("UV Exposure Level", ["Low", "Moderate", "High / Chronic"])
 
     r3_a, r3_b = st.columns(2)
-    water_cups = r
+    water_cups = r3_a.slider("Daily Hydration (Glasses)", min_value=1, max
